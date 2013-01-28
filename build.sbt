@@ -1,4 +1,4 @@
-name := "socrata-sbt"
+name := "socrata-csv"
 
 organization := "com.socrata"
 
