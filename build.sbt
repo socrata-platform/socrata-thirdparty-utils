@@ -7,9 +7,9 @@ name := "socrata-csv"
 
 organization := "com.socrata"
 
-version := "1.1.1"
+version := "1.1.2-SNAPSHOT"
 
-previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-csv_" + sv) % "1.1.0") }
+previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-csv_" + sv) % "1.1.1") }
 
 libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
 
