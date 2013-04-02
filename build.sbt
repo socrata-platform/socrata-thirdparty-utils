@@ -9,8 +9,6 @@ organization := "com.socrata"
 
 version := "1.1.1-SNAPSHOT"
 
-resolvers += "socrata releases" at "https://repo.socrata.com/artifactory/libs-release"
-
 previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-csv_" + sv) % "1.1.0") }
 
 libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
