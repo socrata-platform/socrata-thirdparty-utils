@@ -7,9 +7,9 @@ name := "socrata-thirdparty-utils"
 
 organization := "com.socrata"
 
-version := "1.0.0-SNAPSHOT"
+version := "2.0.0"
 
-// previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "1.0.0") }
+// previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") }
 
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
