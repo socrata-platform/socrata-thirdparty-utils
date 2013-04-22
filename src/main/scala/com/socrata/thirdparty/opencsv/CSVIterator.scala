@@ -1,4 +1,4 @@
-package com.socrata.csv
+package com.socrata.thirdparty.opencsv
 
 import scala.io.Codec
 
@@ -6,32 +6,9 @@ import java.io._
 
 import au.com.bytecode.opencsv._
 
-class CSVIterator private (reader: CSVReader, @deprecated("Do not use") val stream: FileInputStream) extends Iterator[IndexedSeq[String]] with Closeable {
-  // this constructor exists to support the deprecated ctor below; when
-  // that goes away, so can this.
-  private def this(inputStream: FileInputStream,
-                   codec: Codec, separator: Char, quote: Char, escape: Char, skipLines: Int, strictQuotes: Boolean, ignoreLeadingWhitespace: Boolean) =
-    this(new CSVReader(new InputStreamReader(inputStream, codec.charSet),
-      separator, quote, escape, skipLines, strictQuotes, ignoreLeadingWhitespace), inputStream)
-
-  @deprecated("Use CSVIterator.fromFile instead")
-  def this(filename: File,
-           codec: Codec = Codec.UTF8,
-           separator: Char = CSVParser.DEFAULT_SEPARATOR,
-           quote: Char = CSVParser.DEFAULT_QUOTE_CHARACTER,
-           escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
-           skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
-           strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
-           ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) =
-    this(new FileInputStream(filename), codec.charSet,
-      separator,
-      quote,
-      escape,
-      skipLines,
-      strictQuotes,
-      ignoreLeadingWhitespace)
-
-  val it = locally {
+/** Wraps a CSVReader in a native Scala `Iterator`. */
+final class CSVIterator private (reader: CSVReader) extends Iterator[IndexedSeq[String]] with Closeable {
+  private val it = locally {
     def loop(): Stream[IndexedSeq[String]] = {
       reader.readNext() match {
         case null => Stream.empty
@@ -44,7 +21,7 @@ class CSVIterator private (reader: CSVReader, @deprecated("Do not use") val stre
   def hasNext = it.hasNext
   def next() = it.next()
   override def toStream = it.toStream
-  override def toSeq = it.toSeq
+  override def toSeq = it.toStream
 
   def close() {
     reader.close()
@@ -68,8 +45,7 @@ object CSVIterator {
         escape,
         skipLines,
         strictQuotes,
-        ignoreLeadingWhitespace),
-        null)
+        ignoreLeadingWhitespace))
     } catch {
       case e: Throwable =>
         inputStream.close()
@@ -91,8 +67,7 @@ object CSVIterator {
       escape,
       skipLines,
       strictQuotes,
-      ignoreLeadingWhitespace),
-    null)
+      ignoreLeadingWhitespace))
   }
 
   def fromReader(reader: Reader,
@@ -108,7 +83,22 @@ object CSVIterator {
         escape,
         skipLines,
         strictQuotes,
-        ignoreLeadingWhitespace),
-      null)
+        ignoreLeadingWhitespace))
+  }
+
+  def fromString(string: String,
+                 separator: Char = CSVParser.DEFAULT_SEPARATOR,
+                 quote: Char = CSVParser.DEFAULT_QUOTE_CHARACTER,
+                 escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
+                 skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
+                 strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
+                 ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) = {
+    new CSVIterator(new CSVReader(new StringReader(string),
+        separator,
+        quote,
+        escape,
+        skipLines,
+        strictQuotes,
+        ignoreLeadingWhitespace))
   }
 }
