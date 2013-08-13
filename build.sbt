@@ -1,15 +1,12 @@
-import com.typesafe.tools.mima.plugin.MimaPlugin.mimaDefaultSettings
 import com.typesafe.tools.mima.plugin.MimaKeys.previousArtifact
 
-mimaDefaultSettings
+com.socrata.cloudbeessbt.SocrataCloudbeesSbt.socrataSettings()
 
 name := "socrata-thirdparty-utils"
 
-organization := "com.socrata"
+version := "2.0.0"
 
-version := "2.0.1-SNAPSHOT"
-
-previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") }
+previousArtifact <<= scalaBinaryVersion { sv => None /* Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") */ }
 
 libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-api" % "1.7.5",
