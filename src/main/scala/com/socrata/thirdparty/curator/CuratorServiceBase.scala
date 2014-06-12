@@ -8,10 +8,7 @@ import org.apache.curator.x.discovery.{strategies => providerStrategies, Service
  * @param discovery Service discovery object for querying Zookeeper
  * @param serviceName Service name as registered in Zookeeper
  */
-trait CuratorServiceBase[T] extends Closeable {
-  val discovery: ServiceDiscovery[T]
-  val serviceName: String
-
+abstract class CuratorServiceBase[T](discovery: ServiceDiscovery[T], serviceName: String) extends Closeable {
   /**
    * Zookeeper service provider
    */

@@ -4,7 +4,7 @@ import com.socrata.thirdparty.typesafeconfig.ConfigClass
 import com.typesafe.config.Config
 
 /**
- * Contains curator-specific configuration values
+ * Contains curator-specific configuration values for talking to ZK
  * @param config Configuration object
  * @param root Root of the curator configuration subset
  */
@@ -16,5 +16,4 @@ class CuratorConfig(config: Config, root: String) extends ConfigClass(config, ro
   val baseRetryWait   = getDuration("base-retry-wait")
   val maxRetryWait    = getDuration("max-retry-wait")
   val namespace       = getString("namespace")
-  val serviceBasePath = getString("service-base-path")
 }

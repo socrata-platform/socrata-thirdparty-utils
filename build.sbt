@@ -15,7 +15,8 @@ libraryDependencies ++= Seq(
   "com.ning"           % "async-http-client"   % "1.7.13" % "optional",
   "org.apache.curator" % "curator-x-discovery" % "2.4.2" % "optional",
   "org.scalatest"     %% "scalatest"           % "1.9.1" % "test",
-  "org.slf4j"          % "slf4j-simple"        % "1.7.5" % "test"
+  "org.slf4j"          % "slf4j-simple"        % "1.7.5" % "test",
+  "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)"
 )
 
 scalaVersion := "2.10.0"
