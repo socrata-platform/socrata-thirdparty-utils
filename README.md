@@ -19,3 +19,8 @@ async-http-client
 
 `FAsyncHandler`, which gathers the status and headers before creating a consumer
 for the response body.
+
+Releasing
+=========
+
+Run `sbt-release` and set an appropriate version.
