@@ -4,8 +4,6 @@ com.socrata.cloudbeessbt.SocrataCloudbeesSbt.socrataSettings()
 
 name := "socrata-thirdparty-utils"
 
-version := "2.0.1-SNAPSHOT"
-
 previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") }
 
 libraryDependencies ++= Seq(

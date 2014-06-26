@@ -27,3 +27,8 @@ curator
 * `CuratorInitializer`, common initialization stuff for Curator service discovery
 * `CuratorServiceBase`, a Trait for curator-based service clients
 * `ProviderCache`, a cache for Curator service providers
+
+Releasing
+=========
+
+Run `sbt-release` and set an appropriate version.
