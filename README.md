@@ -28,6 +28,11 @@ curator
 * `CuratorServiceBase`, a Trait for curator-based service clients
 * `ProviderCache`, a cache for Curator service providers
 
+geojson
+-------
+
+GeoJSON Codecs for [rojoma-json](http://github.com/rjmac/rojoma-json).  Has no dependencies on GeoTools and integrates well into serializing geoJSON as part of larger document or into streaming serializers.
+
 Releasing
 =========
 
