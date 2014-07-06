@@ -7,12 +7,17 @@ import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 
 
-class GeoJsonTest extends FunSpec with ShouldMatchers {
+trait GeoTest {
   val factory = new GeometryFactory
   def coord(x: Double, y: Double) = new Coordinate(x, y)
   def mkCoord(xy: (Double, Double)) = (coord _).tupled(xy)
   def linestring(coords: (Double, Double)*) = factory.createLineString(coords.map(mkCoord).toArray)
+  def polygon(coords: (Double, Double)*) = factory.createPolygon(
+                                             factory.createLinearRing(coords.map(mkCoord).toArray),
+                                             Array.empty)
+}
 
+class GeoJsonTest extends FunSpec with ShouldMatchers with GeoTest {
   val feat = """{
                 |  "type": "Feature",
                 |  "geometry": {

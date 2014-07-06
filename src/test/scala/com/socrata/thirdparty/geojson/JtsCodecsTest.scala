@@ -7,12 +7,14 @@ import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
 
 
-class JtsCodecsTest extends FunSpec with ShouldMatchers {
+class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
   import JtsCodecs._
 
   val pointCoords = JArray(Seq(JNumber(6.0), JNumber(1.2)))
   val point2Coords = JArray(Seq(JNumber(3.4), JNumber(-2.7)))
   val lineCoords = JArray(Seq(pointCoords, point2Coords))
+
+  def decodeString(str: String) = geoCodec.decode(JsonReader.fromString(str))
 
   describe("GeometryCodec") {
     it("should convert geometry JSON of type Point correctly") {
@@ -20,13 +22,24 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers {
                     |  "type": "Point",
                     |  "coordinates": [6.0, 1.2]
                     |}""".stripMargin
-      val pt = geoCodec.decode(JsonReader.fromString(body)).asInstanceOf[Option[Point]]
+      val pt = decodeString(body).asInstanceOf[Option[Point]]
       (pt.get.getX, pt.get.getY) should equal (6.0, 1.2)
+    }
+
+    it("should convert geometry JSON of type Polygon") {
+      val body = """{
+                    |  "type": "Polygon",
+                    |  "coordinates": [[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [0.0, 0.0]]]
+                    |}""".stripMargin
+      decodeString(body) should equal (Some(polygon((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.0, 0.0))))
     }
 
     it("should not convert non-GeoJSON or unsupported types") {
       val body = JObject(Map("type" -> JString("foo"), "coordinates" -> pointCoords))
       geoCodec.decode(body) should equal (None)
+
+      val body2 = JArray(Seq(JString("totally not"), JNumber(5.6)))
+      geoCodec.decode(body2) should equal (None)
     }
   }
 
