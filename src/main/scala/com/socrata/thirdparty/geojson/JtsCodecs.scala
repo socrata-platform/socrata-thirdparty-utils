@@ -57,9 +57,23 @@ object JtsCodecs {
     }
   }
 
+  implicit object MultiPolygonCodec extends JsonCodec[MultiPolygon] {
+    def encode(mp: MultiPolygon): JValue = ???
+    def decode(json: JValue): Option[MultiPolygon] =
+      JsonCodec[Array[Polygon]].decode(json).map { polygons => factory.createMultiPolygon(polygons) }
+  }
+
+  implicit object MultiLineStringCodec extends JsonCodec[MultiLineString] {
+    def encode(mls: MultiLineString): JValue = ???
+    def decode(json: JValue): Option[MultiLineString] =
+      JsonCodec[Array[LineString]].decode(json).map { lines => factory.createMultiLineString(lines) }
+  }
+
   implicit val geoCodec = SimpleHierarchyCodecBuilder[Geometry](TagAndValue("type", "coordinates")).
                              branch[Point]("Point").
                              branch[LineString]("LineString").
                              branch[Polygon]("Polygon").
+                             branch[MultiPolygon]("MultiPolygon").
+                             branch[MultiLineString]("MultiLineString").
                              build
 }

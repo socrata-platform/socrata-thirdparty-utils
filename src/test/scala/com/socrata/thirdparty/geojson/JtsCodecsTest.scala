@@ -34,6 +34,29 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
       decodeString(body) should equal (Some(polygon((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.0, 0.0))))
     }
 
+    it("should convert geometry JSON of MultiLineString") {
+      val body = """{
+                    |  "type": "MultiLineString",
+                    |  "coordinates": [[[0.0, 0.0], [0.0, 1.0]], [[1.0, 0.0], [1.0, 1.0]]]
+                    |}""".stripMargin
+      val mls = factory.createMultiLineString(Array(
+                  linestring((0.0, 0.0), (0.0, 1.0)), linestring((1.0, 0.0), (1.0, 1.0))
+                ))
+      decodeString(body) should equal (Some(mls))
+    }
+
+    it("should convert geometry JSON of type MultiPolygon") {
+      val body = """{
+          |  "type": "MultiPolygon",
+          |  "coordinates": [[[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [0.0, 0.0]]], [[[1.0, 1.0], [1.0, 2.0], [2.0, 2.0], [1.0, 1.0]]]]
+          |}""".stripMargin
+      val mp = factory.createMultiPolygon(Array(
+                 polygon((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.0, 0.0)),
+                 polygon((1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (1.0, 1.0))
+               ))
+      decodeString(body) should equal (Some(mp))
+    }
+
     it("should not convert non-GeoJSON or unsupported types") {
       val body = JObject(Map("type" -> JString("foo"), "coordinates" -> pointCoords))
       geoCodec.decode(body) should equal (None)
