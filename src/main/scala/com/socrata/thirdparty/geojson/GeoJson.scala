@@ -8,8 +8,16 @@ import com.vividsolutions.jts.geom._
 sealed trait GeoJsonBase
 
 // The possible subtypes of GeoJSON objects
-case class FeatureJson(properties: Map[String, JValue], geometry: Geometry) extends GeoJsonBase
-case class FeatureCollectionJson(features: Seq[FeatureJson], crs: Option[JObject]) extends GeoJsonBase
+// See http://geojson.org/geojson-spec.html
+case class FeatureJson(properties: Map[String, JValue],
+                       geometry: Geometry,
+                       crs: Option[CRS] = None) extends GeoJsonBase
+case class FeatureCollectionJson(features: Seq[FeatureJson],
+                                 crs: Option[CRS] = None) extends GeoJsonBase
+
+// Not considered a GeoJSON object, but still.
+// Two possible values for crsType:  name, link
+case class CRS(@JsonKey("type") crsType: String, properties: Map[String, JValue])
 
 /**
  * The normal entry point for GeoJSON object decoding.  All GeoJSON objects are subtypes of GeoJsonBase.
@@ -27,6 +35,7 @@ case class FeatureCollectionJson(features: Seq[FeatureJson], crs: Option[JObject
 object GeoJson {
   import JtsCodecs._
 
+  implicit val crsJsonCodec = AutomaticJsonCodecBuilder[CRS]
   implicit val featureJsonCodec = AutomaticJsonCodecBuilder[FeatureJson]
   implicit val featureCollectionJsonCodec = AutomaticJsonCodecBuilder[FeatureCollectionJson]
 

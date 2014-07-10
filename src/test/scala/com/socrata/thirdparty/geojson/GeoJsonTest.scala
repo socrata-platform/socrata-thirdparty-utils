@@ -38,9 +38,12 @@ class GeoJsonTest extends FunSpec with ShouldMatchers with GeoTest {
 
   describe("FeatureCollectionJson") {
     it("should decode a FeatureCollection JSON") {
-      val body = """{"type":"FeatureCollection", "features": [""" + feat + "]}"
+      val body = """{"type":"FeatureCollection",
+                    |"crs": {"type": "name", "properties": {"foo": "gooblygoo"}},
+                    |"features": [""".stripMargin + feat + "]}"
       GeoJson.codec.decode(JsonReader.fromString(body)) should equal (Some(
-        FeatureCollectionJson(features = Seq(featureJson), crs = None)))
+        FeatureCollectionJson(features = Seq(featureJson),
+                              crs = Some(CRS("name", Map("foo" -> JString("gooblygoo")))) )))
     }
   }
 }
