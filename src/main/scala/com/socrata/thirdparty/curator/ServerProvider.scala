@@ -143,8 +143,8 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
  * Provisions a curator service.
  */
 object CuratorServerProvider {
-  def apply(http: HttpClient,
-            provider: ServiceProvider[Void],
+  def apply[T](http: HttpClient,
+            provider: ServiceProvider[T],
             requestBuilder: RequestBuilder => RequestBuilder): ServerProvider = {
     val find = { () =>
       Option(provider.getInstance()).map { i =>
