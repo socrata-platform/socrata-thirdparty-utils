@@ -27,6 +27,13 @@ curator
 * `CuratorInitializer`, common initialization stuff for Curator service discovery
 * `CuratorServiceBase`, a Trait for curator-based service clients
 * `ProviderCache`, a cache for Curator service providers
+* `CuratorBroker`, a class for registering a service with Curator
+* `CuratorServiceIntegration`, a helper trait to spin up ZK, Curator, discovery for testing
+
+geojson
+-------
+
+GeoJSON Codecs for [rojoma-json](http://github.com/rjmac/rojoma-json).  Has no dependencies on GeoTools and integrates well into serializing geoJSON as part of larger document or into streaming serializers.
 
 Releasing
 =========
