@@ -1,7 +1,8 @@
 package com.socrata.thirdparty.metrics
 
-import com.codahale.metrics.{MetricRegistry, Slf4jReporter, JmxReporter}
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
+import com.codahale.metrics.{MetricRegistry, Slf4jReporter, JmxReporter}
+import com.rojoma.simplearm.{Managed, SimpleArm}
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
 
@@ -43,4 +44,25 @@ class MetricsReporter(options: MetricsOptions, registry: MetricRegistry = Metric
     logger.info("Starting metrics Graphite reporter to {}:{}", options.graphiteHost, options.graphitePort)
     graphiteReporter.start(options.reportingIntervalSecs, TimeUnit.SECONDS)
   }
+
+  def stop() {
+    logger.info("Shutting down reporters...")
+    if (options.logMetrics) slf4jReporter.stop()
+    if (options.enableJmx) jmxReporter.stop()
+    if (options.enableGraphite) graphiteReporter.stop()
+  }
+}
+
+/**
+ * Offers a managed API for reporter lifecycle management
+ */
+object MetricsReporter {
+  def managed(options: MetricsOptions,
+              registry: MetricRegistry = Metrics.metricsRegistry): Managed[MetricsReporter] =
+    new SimpleArm[MetricsReporter] {
+      def flatMap[A](f: MetricsReporter => A): A = {
+        val reporter = new MetricsReporter(options, registry)
+        try f(reporter) finally reporter.stop()
+      }
+    }
 }
