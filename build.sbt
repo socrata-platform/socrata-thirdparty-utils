@@ -16,7 +16,8 @@ val commonDeps = Seq(
   "com.rojoma"        %% "rojoma-json"         % "2.4.3" % "optional",
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
-  "io.dropwizard.metrics" % "metrics-jetty9"   % "3.1.0" % "optional"
+  "io.dropwizard.metrics" % "metrics-jetty9"   % "3.1.0" % "optional",
+  "io.dropwizard.metrics" % "metrics-graphite"   % "3.1.0" % "optional"
 )
 
 val testDeps = Seq(
