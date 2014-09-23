@@ -35,6 +35,15 @@ geojson
 
 GeoJSON Codecs for [rojoma-json](http://github.com/rjmac/rojoma-json).  Has no dependencies on GeoTools and integrates well into serializing geoJSON as part of larger document or into streaming serializers.
 
+metrics
+-------
+
+Support for Coda Hale / Dropwizard Metrics
+
+* `Metrics` trait to mix in for Scala-friendly metrics APIs
+* `MetricsOptions` and `MetricsReporter` for easy initialization of the metrics library and various reporters from config
+* Support for instrumentation of socrata-http services via `SocrataHttpSupport.getHandler`
+
 Releasing
 =========
 
