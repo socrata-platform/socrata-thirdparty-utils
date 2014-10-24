@@ -3,6 +3,7 @@ package com.socrata.thirdparty.metrics
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
 import com.codahale.metrics.{MetricRegistry, Slf4jReporter, JmxReporter}
 import com.rojoma.simplearm.{Managed, SimpleArm}
+import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 import org.slf4j.LoggerFactory
 
@@ -23,7 +24,7 @@ class MetricsReporter(options: MetricsOptions, registry: MetricRegistry = Metric
 
   lazy val jmxReporter = JmxReporter.forRegistry(registry).build()
 
-  lazy val graphite = new Graphite(options.graphiteHost, options.graphitePort)
+  lazy val graphite = new Graphite(new InetSocketAddress(options.graphiteHost, options.graphitePort))
 
   lazy val graphiteReporter = GraphiteReporter.forRegistry(registry)
                                               .convertRatesTo(TimeUnit.SECONDS)

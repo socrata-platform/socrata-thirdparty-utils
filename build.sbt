@@ -16,7 +16,10 @@ val commonDeps = Seq(
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
   "io.dropwizard.metrics" % "metrics-jetty9"   % "3.1.0" % "optional",
-  "io.dropwizard.metrics" % "metrics-graphite"   % "3.1.0" % "optional"
+  // Use older metrics-graphite to fix issue with reconnecting to graphite
+  // See https://github.com/dropwizard/metrics/issues/694
+  "com.codahale.metrics" % "metrics-graphite" % "3.0.2" exclude(
+                           "com.codahale.metrics", "metrics-core")
 )
 
 val testDeps = Seq(
