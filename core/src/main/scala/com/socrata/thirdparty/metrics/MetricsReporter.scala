@@ -33,7 +33,7 @@ class MetricsReporter(options: MetricsOptions, registry: MetricRegistry = Metric
 
   if (options.logMetrics) {
     logger.info("Starting metrics logging...")
-    slf4jReporter.start(options.reportingIntervalSecs, TimeUnit.SECONDS)
+    slf4jReporter.start(options.loggingIntervalSecs, TimeUnit.SECONDS)
   }
 
   if (options.enableJmx) {
