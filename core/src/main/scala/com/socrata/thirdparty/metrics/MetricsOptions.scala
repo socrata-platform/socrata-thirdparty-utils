@@ -10,8 +10,9 @@ import scala.collection.JavaConverters._
  *   com.socrata {
  *     metrics {
  *       prefix = "com.socrata.soda.server"
- *       log-metrics = true
  *       reporting-interval = 60 s
+ *       log-metrics = true
+ *       logging-interval = 5 min
  *       enable-graphite = true
  *       graphite-host = "my.graphite.host"
  *       graphite-port = 2003
@@ -32,7 +33,8 @@ case class MetricsOptions(// Should be a prefix string unique to each service
                           graphiteHost: String = MetricsOptions.defGraphiteHost,
                           graphitePort: Int = MetricsOptions.defGraphitePort,
                           // How often metrics are logged / reported to statsd etc.
-                          reportingIntervalSecs: Int = MetricsOptions.defReportingIntervalSecs)
+                          reportingIntervalSecs: Int = MetricsOptions.defReportingIntervalSecs,
+                          loggingIntervalSecs: Int = MetricsOptions.defLoggingIntervalSecs)
 
 object MetricsOptions {
   val defPrefix = "com.socrata.some.application"
@@ -40,6 +42,7 @@ object MetricsOptions {
   val defEnableJmx = true    // Expose all metrics through JMX
   val defEnableGraphite = false
   val defReportingIntervalSecs = 60
+  val defLoggingIntervalSecs = 60 * 5
   val defGraphiteHost = "localhost"
   val defGraphitePort = 2003
 
@@ -50,18 +53,21 @@ object MetricsOptions {
                         "enable-graphite" -> defEnableGraphite,
                         "graphite-host" -> defGraphiteHost,
                         "graphite-port" -> defGraphitePort,
-                        "reporting-interval" -> (defReportingIntervalSecs + " s")
+                        "reporting-interval" -> (defReportingIntervalSecs + " s"),
+                        "logging-interval" -> (defLoggingIntervalSecs + " s")
                       ).asJava)
 
   def apply(config: Config): MetricsOptions = {
     val configWithDefaults = config.withFallback(defaultConfig)
     val reportingIntervalSecs = configWithDefaults.getMilliseconds("reporting-interval") / 1000
+    val loggingIntervalSecs = configWithDefaults.getMilliseconds("logging-interval") / 1000
     new MetricsOptions(configWithDefaults.getString("prefix"),
                        configWithDefaults.getBoolean("log-metrics"),
                        configWithDefaults.getBoolean("enable-jmx"),
                        configWithDefaults.getBoolean("enable-graphite"),
                        configWithDefaults.getString("graphite-host"),
                        configWithDefaults.getInt("graphite-port"),
-                       reportingIntervalSecs.toInt)
+                       reportingIntervalSecs.toInt,
+                       loggingIntervalSecs.toInt)
   }
 }
