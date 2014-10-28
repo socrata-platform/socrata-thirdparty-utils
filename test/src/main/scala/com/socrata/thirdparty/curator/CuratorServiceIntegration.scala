@@ -14,6 +14,7 @@ import scala.util.Try
  *  using the standard Curator-based Socrata HttpClient library.
  *  {{{
  *    class SomeServiceTest extends FunSpec with CuratorServiceIntegration {
+ *      override def configPrefix = "com.socrata.my.service"
  *      val broker = new CuratorBroker(discovery, "localhost", "myFooService", None))
  *      val cookie = broker.register(servicePort)
  *
@@ -37,13 +38,17 @@ import scala.util.Try
 trait CuratorServiceIntegration {
   import collection.JavaConverters._
 
-  val curatorConfigPrefix = "com.socrata.curator"
+  // You will want to override def configPrefix
+  def configPrefix = "com.socrata"
+  def curatorConfigPrefix = configPrefix + ".curator"
+  def discoveryConfigPrefix = configPrefix + ".service-advertisement"
 
   lazy val zk = new TestingServer
-  lazy val cfgOverride = curatorConfigPrefix + ".ensemble = [\"localhost:" + zk.getPort + "\"]"
-  lazy val config = ConfigFactory.parseString(cfgOverride).withFallback(ConfigFactory.load())
+  lazy val cfgOverride = Map(curatorConfigPrefix + ".ensemble" -> Seq(s"localhost:${zk.getPort}").asJava,
+                             discoveryConfigPrefix + ".address" -> "localhost").asJava
+  lazy val config = ConfigFactory.parseMap(cfgOverride).withFallback(ConfigFactory.load())
   lazy val curatorConfig = new CuratorConfig(config, curatorConfigPrefix)
-  lazy val discoveryConfig = new DiscoveryConfig(config, curatorConfigPrefix)
+  lazy val discoveryConfig = new DiscoveryConfig(config, discoveryConfigPrefix)
 
   lazy val curator = CuratorFromConfig.unmanaged(curatorConfig)
   lazy val discovery = DiscoveryFromConfig.unmanaged(classOf[AuxiliaryData], curator, discoveryConfig)
