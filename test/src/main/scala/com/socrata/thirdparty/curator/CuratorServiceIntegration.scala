@@ -46,7 +46,8 @@ trait CuratorServiceIntegration {
   lazy val zk = new TestingServer
   lazy val cfgOverride = Map(curatorConfigPrefix + ".ensemble" -> Seq(s"localhost:${zk.getPort}").asJava,
                              discoveryConfigPrefix + ".address" -> "localhost").asJava
-  lazy val config = ConfigFactory.parseMap(cfgOverride).withFallback(ConfigFactory.load())
+  lazy val fallback = ""
+  lazy val config = ConfigFactory.parseMap(cfgOverride).withFallback(ConfigFactory.load(fallback))
   lazy val curatorConfig = new CuratorConfig(config, curatorConfigPrefix)
   lazy val discoveryConfig = new DiscoveryConfig(config, discoveryConfigPrefix)
 
