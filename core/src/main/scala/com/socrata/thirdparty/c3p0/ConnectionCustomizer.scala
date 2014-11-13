@@ -33,7 +33,7 @@ class ConnectionCustomizer extends AbstractConnectionCustomizer {
   }
 
   override def onDestroy(c: Connection, parentDataSourceIdentityToken: String) {
-    onEvent(c, parentDataSourceIdentityToken, "onDestroy")
+    // Don't run onEvent.  Calling extensionsForToken can cause deadlock on shut down.
   }
 
   override def onCheckOut(c: Connection, parentDataSourceIdentityToken: String) {
