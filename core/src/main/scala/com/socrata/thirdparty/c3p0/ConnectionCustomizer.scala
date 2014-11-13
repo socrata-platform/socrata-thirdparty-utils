@@ -41,7 +41,7 @@ class ConnectionCustomizer extends AbstractConnectionCustomizer {
   }
 
   override def onCheckIn(c: Connection, parentDataSourceIdentityToken: String) {
-    onEvent(c, parentDataSourceIdentityToken, "onCheckIn")
+    // Don't run onEvent.  Calling extensionsForToken can cause deadlock on shut down.
   }
 
 }
