@@ -12,9 +12,10 @@ trait GeoTest {
   def coord(x: Double, y: Double) = new Coordinate(x, y)
   def mkCoord(xy: (Double, Double)) = (coord _).tupled(xy)
   def linestring(coords: (Double, Double)*) = factory.createLineString(coords.map(mkCoord).toArray)
-  def polygon(coords: (Double, Double)*) = factory.createPolygon(
-                                             factory.createLinearRing(coords.map(mkCoord).toArray),
-                                             Array.empty)
+  def ring(coords: Seq[(Double, Double)]) = factory.createLinearRing(coords.map(mkCoord).toArray)
+  def polygon(coords: (Double, Double)*) = factory.createPolygon(ring(coords), Array.empty)
+  def polygon(outer: Seq[(Double, Double)], inner: Seq[Seq[(Double, Double)]] = Seq.empty) =
+    factory.createPolygon(ring(outer), inner.map(ring).toArray)
 }
 
 class GeoJsonTest extends FunSpec with ShouldMatchers with GeoTest {

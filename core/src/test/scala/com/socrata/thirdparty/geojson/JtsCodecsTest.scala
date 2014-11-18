@@ -15,6 +15,7 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
   val lineCoords = JArray(Seq(pointCoords, point2Coords))
 
   def decodeString(str: String) = geoCodec.decode(JsonReader.fromString(str))
+  def encode(geom: Geometry)    = geoCodec.encode(geom)
 
   describe("GeometryCodec") {
     it("should convert geometry JSON of type Point correctly") {
@@ -24,14 +25,29 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
                     |}""".stripMargin
       val pt = decodeString(body).asInstanceOf[Option[Point]]
       (pt.get.getX, pt.get.getY) should equal (6.0, 1.2)
+      encode(pt.get) should be (JsonReader.fromString(body))
     }
 
-    it("should convert geometry JSON of type Polygon") {
+    it("should convert geometry JSON of type Polygon - exterior and interior ring(s)") {
       val body = """{
                     |  "type": "Polygon",
-                    |  "coordinates": [[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [0.0, 0.0]]]
+                    |  "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
+                    |                  [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]]
                     |}""".stripMargin
-      decodeString(body) should equal (Some(polygon((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.0, 0.0))))
+      val p = decodeString(body).asInstanceOf[Option[Polygon]]
+      p.get should equal (polygon(Seq((100.0, 0.0), (101.0, 0.0), (101.0, 1.0), (100.0, 1.0), (100.0, 0.0)),
+                                  Seq(Seq((100.2, 0.2), (100.8, 0.2), (100.8, 0.8), (100.2, 0.8), (100.2, 0.2)))))
+      encode(p.get) should be (JsonReader.fromString(body))
+    }
+
+    it("should convert geometry JSON of type Polygon - exterior ring only") {
+      val body = """{
+                   |  "type": "Polygon",
+                   |  "coordinates": [[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [0.0, 0.0]]]
+                   |}""".stripMargin
+      val p = decodeString(body).asInstanceOf[Option[Polygon]]
+      p.get should equal (polygon((0.0, 0.0), (0.0, 1.0), (1.0, 1.0), (0.0, 0.0)))
+      encode(p.get) should be (JsonReader.fromString(body))
     }
 
     it("should convert geometry JSON of MultiLineString") {
@@ -43,6 +59,7 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
                   linestring((0.0, 0.0), (0.0, 1.0)), linestring((1.0, 0.0), (1.0, 1.0))
                 ))
       decodeString(body) should equal (Some(mls))
+      encode(mls) should be (JsonReader.fromString(body))
     }
 
     it("should convert geometry JSON of type MultiPolygon") {
@@ -55,6 +72,7 @@ class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
                  polygon((1.0, 1.0), (1.0, 2.0), (2.0, 2.0), (1.0, 1.0))
                ))
       decodeString(body) should equal (Some(mp))
+      encode(mp) should be (JsonReader.fromString(body))
     }
 
     it("should not convert non-GeoJSON or unsupported types") {
