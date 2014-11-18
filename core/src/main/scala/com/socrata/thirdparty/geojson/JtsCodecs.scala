@@ -51,7 +51,7 @@ object JtsCodecs {
   implicit object PolygonCodec extends JsonCodec[Polygon] {
     def encode(polygon: Polygon): JValue = {
       val exteriorRing = polygon.getExteriorRing.getCoordinates
-      val interiorRings = (0 to polygon.getNumInteriorRing - 1).map { idx =>
+      val interiorRings = (0 until polygon.getNumInteriorRing).map { idx =>
         polygon.getInteriorRingN(idx).getCoordinates
       }
       JsonCodec[List[Array[Coordinate]]].encode(exteriorRing :: interiorRings.toList)
