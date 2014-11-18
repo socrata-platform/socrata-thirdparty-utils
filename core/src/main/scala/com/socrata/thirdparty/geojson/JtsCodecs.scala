@@ -54,7 +54,7 @@ object JtsCodecs {
       val interiorRings = (0 to polygon.getNumInteriorRing - 1).map { idx =>
         polygon.getInteriorRingN(idx).getCoordinates
       }
-      JsonCodec[List[Array[Coordinate]]].encode(List(exteriorRing) ++ interiorRings)
+      JsonCodec[List[Array[Coordinate]]].encode(exteriorRing :: interiorRings.toList)
     }
 
     def decode(json: JValue): Option[Polygon] = {
@@ -72,7 +72,7 @@ object JtsCodecs {
 
   implicit object MultiPolygonCodec extends JsonCodec[MultiPolygon] {
     def encode(mp: MultiPolygon): JValue =
-      JsonCodec[Array[Polygon]].encode((0 to mp.getNumGeometries - 1).map { idx =>
+      JsonCodec[Array[Polygon]].encode((0 until mp.getNumGeometries).map { idx =>
         mp.getGeometryN(idx) match { case p: Polygon => p }
       }.toArray)
 
@@ -82,7 +82,7 @@ object JtsCodecs {
 
   implicit object MultiLineStringCodec extends JsonCodec[MultiLineString] {
     def encode(mls: MultiLineString): JValue =
-      JsonCodec[Array[LineString]].encode((0 to mls.getNumGeometries - 1).map { idx =>
+      JsonCodec[Array[LineString]].encode((0 until mls.getNumGeometries).map { idx =>
         mls.getGeometryN(idx) match { case ls: LineString => ls }
       }.toArray)
 
