@@ -18,6 +18,9 @@ class ConnectionCustomizer extends AbstractConnectionCustomizer {
     return Option(extensionsForToken(parentDataSourceIdentityToken).get(configName).asInstanceOf[String])
   }
 
+  /**
+   * Do not call this function from onDestroy or onCheckIn.  Calling extensionsForToken can cause deadlock on shut down.
+   */
   private def onEvent(c: Connection, parentDataSourceIdentityToken: String, event: String) {
     val sql = getConfig(parentDataSourceIdentityToken, event)
     sql.foreach { s =>
@@ -32,16 +35,7 @@ class ConnectionCustomizer extends AbstractConnectionCustomizer {
     onEvent(c, parentDataSourceIdentityToken, "onAcquire")
   }
 
-  override def onDestroy(c: Connection, parentDataSourceIdentityToken: String) {
-    // Don't run onEvent.  Calling extensionsForToken can cause deadlock on shut down.
-  }
-
   override def onCheckOut(c: Connection, parentDataSourceIdentityToken: String) {
     onEvent(c, parentDataSourceIdentityToken, "onCheckOut")
   }
-
-  override def onCheckIn(c: Connection, parentDataSourceIdentityToken: String) {
-    // Don't run onEvent.  Calling extensionsForToken can cause deadlock on shut down.
-  }
-
 }
