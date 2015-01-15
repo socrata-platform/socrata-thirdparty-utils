@@ -3,7 +3,7 @@ package com.socrata.thirdparty.curator
 import com.rojoma.simplearm.{Managed, SimpleArm}
 import org.apache.curator.framework.{CuratorFramework, CuratorFrameworkFactory}
 import org.apache.curator.retry
-import org.apache.curator.x.discovery.{ServiceDiscovery, ServiceDiscoveryBuilder}
+import org.apache.curator.x.discovery._
 
 /**
  * Top level function for managed resource use of CuratorFramework.  Starts the framework and closes it
@@ -67,4 +67,22 @@ object DiscoveryFromConfig {
       basePath(config.serviceBasePath).
       build()
   }
+}
+
+object ServiceProviderFromName {
+  def apply[T](discovery: ServiceDiscovery[T], serviceName: String): Managed[ServiceProvider[T]] =
+    new SimpleArm[ServiceProvider[T]] {
+      def flatMap[A](f: ServiceProvider[T] => A): A = {
+        val sp = discovery.serviceProviderBuilder().
+          providerStrategy(new strategies.RoundRobinStrategy).
+          serviceName(serviceName).
+          build()
+        try {
+          sp.start()
+          f(sp)
+        } finally {
+          sp.close()
+        }
+      }
+    }
 }
