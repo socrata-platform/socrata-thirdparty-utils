@@ -69,7 +69,7 @@ object DiscoveryFromConfig {
   }
 }
 
-object ServiceProviderFromConfig {
+object ServiceProviderFromName {
   def apply[T](discovery: ServiceDiscovery[T], serviceName: String): Managed[ServiceProvider[T]] =
     new SimpleArm[ServiceProvider[T]] {
       def flatMap[A](f: ServiceProvider[T] => A): A = {
