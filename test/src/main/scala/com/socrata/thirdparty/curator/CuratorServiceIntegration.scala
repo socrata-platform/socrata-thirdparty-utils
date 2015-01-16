@@ -53,8 +53,10 @@ trait CuratorServiceIntegration {
   lazy val curator = CuratorFromConfig.unmanaged(curatorConfig)
   lazy val discovery = DiscoveryFromConfig.unmanaged(classOf[AuxiliaryData], curator, discoveryConfig)
 
-  lazy val httpClient = new HttpClientHttpClient(
-    NoopLivenessChecker, Executors.newCachedThreadPool(), userAgent = "test")
+  lazy val httpClient = new HttpClientHttpClient(Executors.newCachedThreadPool(),
+                                                 HttpClientHttpClient.
+                                                   defaultOptions.
+                                                   withUserAgent("test"))
 
   protected def getFallback = ConfigFactory.load()
 
