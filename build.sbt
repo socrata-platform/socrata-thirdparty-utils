@@ -12,6 +12,7 @@ val commonDeps = Seq(
   "com.socrata"       %% "socrata-http-client" % "2.0.0" % "optional",
   "org.scalatest"     %% "scalatest"           % "1.9.1" % "test",
   "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
+  "com.rojoma"        %% "simple-arm-v2"       % "2.0.0" % "optional",
   "com.rojoma"        %% "rojoma-json"         % "2.4.3" % "optional",
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
@@ -19,7 +20,7 @@ val commonDeps = Seq(
   // Use older metrics-graphite to fix issue with reconnecting to graphite
   // See https://github.com/dropwizard/metrics/issues/694
   "com.codahale.metrics" % "metrics-graphite" % "3.0.2" exclude(
-                           "com.codahale.metrics", "metrics-core"),
+                             "com.codahale.metrics", "metrics-core"),
   "com.mchange"        % "c3p0"                % "0.9.5-pre9" % "optional"
 )
 

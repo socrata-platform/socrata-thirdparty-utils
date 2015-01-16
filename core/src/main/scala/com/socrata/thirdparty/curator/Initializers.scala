@@ -1,6 +1,6 @@
 package com.socrata.thirdparty.curator
 
-import com.rojoma.simplearm.{Managed, SimpleArm}
+import com.rojoma.simplearm.v2.Managed
 import org.apache.curator.framework.{CuratorFramework, CuratorFrameworkFactory}
 import org.apache.curator.retry
 import org.apache.curator.x.discovery._
@@ -13,8 +13,8 @@ import org.apache.curator.x.discovery._
  * }}}
  */
 object CuratorFromConfig {
-  def apply(config: CuratorConfig): Managed[CuratorFramework] = new SimpleArm[CuratorFramework] {
-    def flatMap[A](f: CuratorFramework => A): A = {
+  def apply(config: CuratorConfig): Managed[CuratorFramework] = new Managed[CuratorFramework] {
+    def run[A](f: CuratorFramework => A): A = {
        val curator = unmanaged(config)
        curator.start()
        try f(curator) finally curator.close()
@@ -49,8 +49,8 @@ object CuratorFromConfig {
  */
 object DiscoveryFromConfig {
   def apply[T](payloadClass: Class[T], curator: CuratorFramework, config: DiscoveryConfig):
-      Managed[ServiceDiscovery[T]] = new SimpleArm[ServiceDiscovery[T]] {
-    def flatMap[A](f: ServiceDiscovery[T] => A): A = {
+      Managed[ServiceDiscovery[T]] = new Managed[ServiceDiscovery[T]] {
+    def run[A](f: ServiceDiscovery[T] => A): A = {
       val discovery = unmanaged(payloadClass, curator, config)
       discovery.start()
       try f(discovery) finally discovery.close()
@@ -71,8 +71,8 @@ object DiscoveryFromConfig {
 
 object ServiceProviderFromName {
   def apply[T](discovery: ServiceDiscovery[T], serviceName: String): Managed[ServiceProvider[T]] =
-    new SimpleArm[ServiceProvider[T]] {
-      def flatMap[A](f: ServiceProvider[T] => A): A = {
+    new Managed[ServiceProvider[T]] {
+      def run[A](f: ServiceProvider[T] => A): A = {
         val sp = discovery.serviceProviderBuilder().
           providerStrategy(new strategies.RoundRobinStrategy).
           serviceName(serviceName).
