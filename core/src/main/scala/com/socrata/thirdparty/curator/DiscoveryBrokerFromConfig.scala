@@ -8,7 +8,7 @@ import com.rojoma.simplearm.v2.{Managed, Resource, managed}
 import com.socrata.http.client.HttpClientHttpClient
 
 object DiscoveryBrokerFromConfig {
-  private val defaultExecutor = {
+  private def defaultExecutor = {
     // Never timeout shutting down an executor.
     implicit val timeout = Resource.executorShutdownNoTimeout
 
