@@ -37,7 +37,7 @@ case class CuratedServiceClient(provider: ServerProvider,
     }
 
     provider.withRetries(maxRetries,
-                         request,
+                         requestWithTimeout,
                          ServerProvider.RetryOnAllExceptionsDuringInitialRequest) {
       case Some(response) =>
         Complete(callback(response))
