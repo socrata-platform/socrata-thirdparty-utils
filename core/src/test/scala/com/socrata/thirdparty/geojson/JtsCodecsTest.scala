@@ -3,11 +3,10 @@ package com.socrata.thirdparty.geojson
 import com.rojoma.json.ast._
 import com.rojoma.json.io.JsonReader
 import com.vividsolutions.jts.geom._
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, FunSpec}
 
 
-class JtsCodecsTest extends FunSpec with ShouldMatchers with GeoTest {
+class JtsCodecsTest extends FunSpec with Matchers with GeoTest {
   import JtsCodecs._
 
   val pointCoords = JArray(Seq(JNumber(6.0), JNumber(1.2)))

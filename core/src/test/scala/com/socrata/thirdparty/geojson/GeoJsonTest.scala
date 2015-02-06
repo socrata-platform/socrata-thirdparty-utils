@@ -3,8 +3,7 @@ package com.socrata.thirdparty.geojson
 import com.rojoma.json.ast._
 import com.rojoma.json.io.JsonReader
 import com.vividsolutions.jts.geom._
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Matchers, FunSpec}
 
 
 trait GeoTest {
@@ -18,7 +17,7 @@ trait GeoTest {
     factory.createPolygon(ring(outer), inner.map(ring).toArray)
 }
 
-class GeoJsonTest extends FunSpec with ShouldMatchers with GeoTest {
+class GeoJsonTest extends FunSpec with Matchers with GeoTest {
   val feat = """{
                 |  "type": "Feature",
                 |  "geometry": {
