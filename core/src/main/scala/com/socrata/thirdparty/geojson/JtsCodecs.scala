@@ -1,8 +1,9 @@
 package com.socrata.thirdparty.geojson
 
-import com.rojoma.json.ast._
-import com.rojoma.json.codec.JsonCodec
-import com.rojoma.json.util._
+import com.rojoma.json.v3.ast._
+import com.rojoma.json.v3.codec.DecodeError.{InvalidValue, InvalidType}
+import com.rojoma.json.v3.codec._
+import com.rojoma.json.v3.util._
 import com.vividsolutions.jts.geom._
 
 /**
@@ -18,76 +19,78 @@ import com.vividsolutions.jts.geom._
 object JtsCodecs {
   private val factory = new GeometryFactory
 
-  implicit object CoordinateCodec extends JsonCodec[Coordinate] {
+  implicit object CoordinateCodec extends JsonEncode[Coordinate] with JsonDecode[Coordinate] {
     def encode(pt: Coordinate): JValue =
-      if (pt.z.isNaN) {
+      if (pt.z.isNaN)
         JArray(Seq(JNumber(pt.x), JNumber(pt.y)))
-      } else {
+      else
         JArray(Seq(JNumber(pt.x), JNumber(pt.y), JNumber(pt.z)))
+
+
+
+    def decode(json: JValue): JsonDecode.DecodeResult[Coordinate] =
+      json match {
+        case JArray(Seq(x: JNumber, y: JNumber)) => Right(new Coordinate(x.toDouble, y.toDouble))
+        case JArray(Seq(x: JNumber, y:JNumber, z:JNumber)) => Right(new Coordinate(x.toDouble, y.toDouble, z.toDouble))
+        case _ => Left(InvalidValue(json))
       }
-
-    def decode(json: JValue): Option[Coordinate] = json match {
-      case JArray(Seq(JNumber(x), JNumber(y))) =>
-        Some(new Coordinate(x.toDouble, y.toDouble))
-      case JArray(Seq(JNumber(x), JNumber(y), JNumber(z))) =>
-        Some(new Coordinate(x.toDouble, y.toDouble, z.toDouble))
-      case other =>
-        None
-    }
   }
 
-  implicit object PointCodec extends JsonCodec[Point] {
-    def encode(pt: Point): JValue = JsonCodec[Coordinate].encode(pt.getCoordinate)
-    def decode(json: JValue): Option[Point] =
-      CoordinateCodec.decode(json).map { coord => factory.createPoint(coord) }
+  implicit object PointCodec extends JsonEncode[Point] with JsonDecode[Point] {
+    def encode(pt: Point): JValue = JsonEncode[Coordinate].encode(pt.getCoordinate)
+
+    def decode(json: JValue): JsonDecode.DecodeResult[Point] =
+      CoordinateCodec.decode(json).right.map(factory.createPoint)
   }
 
-  implicit object LineStringCodec extends JsonCodec[LineString] {
-    def encode(line: LineString): JValue = JsonCodec[Array[Coordinate]].encode(line.getCoordinates)
-    def decode(json: JValue): Option[LineString] =
-      JsonCodec[Array[Coordinate]].decode(json).map { coords => factory.createLineString(coords) }
+  implicit object LineStringCodec extends JsonEncode[LineString] with JsonDecode[LineString] {
+    def encode(line: LineString): JValue = JsonEncode[Array[Coordinate]].encode(line.getCoordinates)
+
+    def decode(json: JValue): JsonDecode.DecodeResult[LineString] =
+      JsonDecode[Array[Coordinate]].decode(json).right.map(factory.createLineString)
   }
 
-  implicit object PolygonCodec extends JsonCodec[Polygon] {
+  implicit object PolygonCodec extends JsonEncode[Polygon] with JsonDecode[Polygon] {
     def encode(polygon: Polygon): JValue = {
       val exteriorRing = polygon.getExteriorRing.getCoordinates
       val interiorRings = (0 until polygon.getNumInteriorRing).map { idx =>
         polygon.getInteriorRingN(idx).getCoordinates
       }
-      JsonCodec[List[Array[Coordinate]]].encode(exteriorRing :: interiorRings.toList)
+      // aggregate two arrays into a list.
+      JsonEncode[List[Array[Coordinate]]].encode(exteriorRing :: interiorRings.toList)
     }
 
-    def decode(json: JValue): Option[Polygon] = {
-      for {
-        // Splits the first ring of a polygon from subsequent rings, which are holes.
-        ring :: holes <- JsonCodec[List[Array[Coordinate]]].decode(json)
-      } yield {
-        factory.createPolygon(
-          factory.createLinearRing(ring),
-          holes.map(hole => factory.createLinearRing(hole)).toArray
-        )
+    def decode(json: JValue): JsonDecode.DecodeResult[Polygon] = {
+      JsonDecode[List[Array[Coordinate]]].decode(json) match {
+        case Right(ring :: holes) =>
+          Right(
+            factory.createPolygon(
+              factory.createLinearRing(ring),
+              holes.map(hole => factory.createLinearRing(hole)).toArray)
+          )
+        case Left(x) => Left(x)
       }
     }
   }
 
-  implicit object MultiPolygonCodec extends JsonCodec[MultiPolygon] {
+  implicit object MultiPolygonCodec extends JsonEncode[MultiPolygon] with JsonDecode[MultiPolygon] {
     def encode(mp: MultiPolygon): JValue =
-      JsonCodec[Array[Polygon]].encode((0 until mp.getNumGeometries).map { idx =>
+      JsonEncode[Array[Polygon]].encode((0 until mp.getNumGeometries).map { idx =>
         mp.getGeometryN(idx) match { case p: Polygon => p }
       }.toArray)
 
-    def decode(json: JValue): Option[MultiPolygon] =
-      JsonCodec[Array[Polygon]].decode(json).map { polygons => factory.createMultiPolygon(polygons) }
+    def decode(json: JValue): JsonDecode.DecodeResult[MultiPolygon] =
+      JsonDecode[Array[Polygon]].decode(json).right.map(factory.createMultiPolygon)
   }
 
-  implicit object MultiLineStringCodec extends JsonCodec[MultiLineString] {
+  implicit object MultiLineStringCodec extends JsonEncode[MultiLineString] with JsonDecode[MultiLineString] {
     def encode(mls: MultiLineString): JValue =
-      JsonCodec[Array[LineString]].encode((0 until mls.getNumGeometries).map { idx =>
+      JsonEncode[Array[LineString]].encode((0 until mls.getNumGeometries).map { idx =>
         mls.getGeometryN(idx) match { case ls: LineString => ls }
       }.toArray)
 
-    def decode(json: JValue): Option[MultiLineString] =
-      JsonCodec[Array[LineString]].decode(json).map { lines => factory.createMultiLineString(lines) }
+    def decode(json: JValue): JsonDecode.DecodeResult[MultiLineString] =
+      JsonDecode[Array[LineString]].decode(json).right.map(factory.createMultiLineString)
   }
 
   implicit val geoCodec = SimpleHierarchyCodecBuilder[Geometry](TagAndValue("type", "coordinates")).
@@ -97,4 +100,8 @@ object JtsCodecs {
                              branch[MultiPolygon]("MultiPolygon").
                              branch[MultiLineString]("MultiLineString").
                              build
+
+
+
+
 }
