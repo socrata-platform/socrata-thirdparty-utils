@@ -35,30 +35,34 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
 
   private val log = org.slf4j.LoggerFactory.getLogger(getClass)
 
+  private sealed abstract class FailedCause
+  private case object FailedDueToConnection extends FailedCause
+  private case object FailedDueToOther extends FailedCause
+
   private abstract class RequestResult
-  private case class Failed(e: Exception) extends RequestResult
+  private case class Failed(e: Exception, cause: FailedCause) extends RequestResult
   private case object NoServices extends RequestResult
   private case class RequestMade(host: ServerProvider.Service, response: Response with Closeable) extends RequestResult
 
   private def makeRequest(completer: RequestBuilder => SimpleHttpRequest, retryWhen: RetryWhen): RequestResult = {
     finder() match {
       case Some(hp) =>
-        def maybeAbort(e: Exception) = {
+        def maybeAbort(e: Exception, causeClassifier: FailedCause) = {
           hp.markBad()
-          Failed(e)
+          Failed(e, causeClassifier)
         }
         val req = completer(hp.baseRequest)
         try {
           RequestMade(hp, http.executeUnmanaged(req))
         } catch {
           case e: ConnectTimeout =>
-            maybeAbort(e)
+            maybeAbort(e, FailedDueToConnection)
           case e: ConnectFailed =>
-            maybeAbort(e)
+            maybeAbort(e, FailedDueToConnection)
           case e: Exception =>
             retryWhen match {
               case RetryOnConnectFailure => throw e
-              case RetryOnAllExceptionsDuringInitialRequest => maybeAbort(e)
+              case RetryOnAllExceptionsDuringInitialRequest => maybeAbort(e, FailedDueToOther)
             }
         }
       case None =>
@@ -84,9 +88,12 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
       makeRequest(completer, retryWhen) match {
         case RequestMade(_, resp) =>
           resp
-        case Failed(ex) =>
+        case Failed(_, FailedDueToConnection) =>
+          if(retriesLeft <= 0) onNoServers
+          else loop(retriesLeft - 1)
+        case Failed(ex, FailedDueToOther) =>
           if(retriesLeft <= 0) throw ex
-          loop(retriesLeft - 1)
+          else loop(retriesLeft - 1)
         case NoServices =>
           onNoServers
       }
@@ -122,10 +129,12 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
               if(retriesLeft <= 0) throw ex
               loop(retriesLeft - 1)
           }
-        case Failed(ex) =>
+        case Failed(ex, FailedDueToOther) =>
           if(retriesLeft <= 0) throw ex
+          else loop(retriesLeft - 1)
+        case Failed(_, FailedDueToConnection) if retriesLeft > 0 =>
           loop(retriesLeft - 1)
-        case NoServices =>
+        case Failed(_, FailedDueToConnection) | NoServices =>
           f(None) match {
             case Complete(answer) =>
               answer
@@ -144,13 +153,15 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
  */
 object CuratorServerProvider {
   def apply[T](http: HttpClient,
-            provider: ServiceProvider[T],
-            requestBuilder: RequestBuilder => RequestBuilder): ServerProvider = {
+               provider: ServiceProvider[T],
+               requestBuilder: RequestBuilder => RequestBuilder): ServerProvider = {
     val find = { () =>
       Option(provider.getInstance()).map { i =>
         new ServerProvider.Service {
           override val baseRequest: RequestBuilder =
-            // TODO: Provide ability to set liveness check info
+          // TODO: Provide ability to set liveness check info
+          // If you wanted to set livenessCheckInfo from the instance's AuxiliaryData, you'd do it here.
+          // I'm not, because core doesn't provide an instance payload.
             requestBuilder(RequestBuilder(i.getAddress).port(i.getPort))
 
           override def markBad(): Unit =
