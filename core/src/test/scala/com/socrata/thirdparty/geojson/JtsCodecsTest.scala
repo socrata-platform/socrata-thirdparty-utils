@@ -1,7 +1,7 @@
 package com.socrata.thirdparty.geojson
 
 import com.rojoma.json.v3.ast._
-import com.rojoma.json.v3.codec.JsonDecode
+import com.rojoma.json.v3.codec.{DecodeError, JsonDecode}
 import com.rojoma.json.v3.io.JsonReader
 import com.vividsolutions.jts.geom._
 import org.scalatest.prop.PropertyChecks
@@ -62,6 +62,16 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
 
         geoCodec.decode(encode(extPolygon)) should equal (Right(extPolygon))
       }
+    }
+
+    it("should convert empty geometry JSON of type Polygon to a Left") {
+      val body = """{
+                   |  "type": "Polygon",
+                   |  "coordinates": []
+                   |}""".stripMargin
+      val decoded = decodeString(body)
+      decoded should be ('left)
+      decoded.left.get should be (a [DecodeError.InvalidValue])
     }
 
     it("should convert geometry JSON of MultiLineString") {
