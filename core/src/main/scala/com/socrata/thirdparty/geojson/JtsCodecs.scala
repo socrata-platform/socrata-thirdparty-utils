@@ -68,6 +68,7 @@ object JtsCodecs {
               factory.createLinearRing(ring),
               holes.map(hole => factory.createLinearRing(hole)).toArray)
           )
+        case Right(Nil) => Left(DecodeError.InvalidValue(json))
         case Left(x) => Left(x)
       }
     }
