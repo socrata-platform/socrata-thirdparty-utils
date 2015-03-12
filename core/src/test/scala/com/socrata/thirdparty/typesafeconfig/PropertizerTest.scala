@@ -4,7 +4,7 @@ import scala.collection.JavaConverters._
 
 import com.typesafe.config.ConfigFactory
 import org.scalatest.FunSuite
-import org.scalatest.matchers.MustMatchers
+import org.scalatest.MustMatchers
 
 import java.util.Properties
 

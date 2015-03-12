@@ -15,7 +15,6 @@ val commonDeps = Seq(
   "org.scalatest"     %% "scalatest"           % "2.2.1" % "test",
   "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
   "com.rojoma"        %% "simple-arm-v2"       % "2.0.0" % "optional",
-  "com.rojoma"        %% "rojoma-json"         % "2.4.3" % "optional",
   "com.rojoma"        %% "rojoma-json-v3"      % "3.2.1" % "optional",
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
