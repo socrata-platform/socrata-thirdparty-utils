@@ -4,6 +4,7 @@ import com.socrata.http.client._
 import com.socrata.http.client.exceptions._
 import java.io.Closeable
 import org.apache.curator.x.discovery.ServiceProvider
+import org.apache.http.client.CircularRedirectException
 import scala.annotation.tailrec
 
 /**
@@ -13,6 +14,30 @@ object ServerProvider {
   sealed abstract class RetryWhen
   case object RetryOnConnectFailure extends RetryWhen
   case object RetryOnAllExceptionsDuringInitialRequest extends RetryWhen
+  case class RetryOn(decision: Exception => RetryDecision) extends RetryWhen
+
+  sealed abstract class RetryDecision
+  case object DoNotRetry extends RetryDecision
+  case class DoRetry(markBad: Boolean) extends RetryDecision
+
+  val standardRetryOn: RetryWhen = RetryOn(standardRetryOnDecision)
+
+  @tailrec
+  private def ultimateCause(t: Throwable): Throwable =
+    if(t.getCause != null) ultimateCause(t.getCause)
+    else t
+
+  private def standardRetryOnDecision(e: Exception): RetryDecision =
+    ultimateCause(e) match {
+      case _: CircularRedirectException =>
+        // This leaks the fact that an Apache HttpClient underlies
+        // HttpClientHttpClient.  The redirect loop should be exposed
+        // in an underlying-client-independent manner.  But for now,
+        // this'll do.
+        DoNotRetry
+      case _ =>
+        DoRetry(markBad = false)
+    }
 
   trait Service {
     def baseRequest: RequestBuilder
@@ -47,8 +72,8 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
   private def makeRequest(completer: RequestBuilder => SimpleHttpRequest, retryWhen: RetryWhen): RequestResult = {
     finder() match {
       case Some(hp) =>
-        def maybeAbort(e: Exception, causeClassifier: FailedCause) = {
-          hp.markBad()
+        def maybeAbort(e: Exception, causeClassifier: FailedCause, markBad: Boolean = true) = {
+          if(markBad) hp.markBad()
           Failed(e, causeClassifier)
         }
         val req = completer(hp.baseRequest)
@@ -61,8 +86,17 @@ class ServerProvider(val finder: () => Option[ServerProvider.Service], val http:
             maybeAbort(e, FailedDueToConnection)
           case e: Exception =>
             retryWhen match {
-              case RetryOnConnectFailure => throw e
-              case RetryOnAllExceptionsDuringInitialRequest => maybeAbort(e, FailedDueToOther)
+              case RetryOnConnectFailure =>
+                throw e
+              case RetryOnAllExceptionsDuringInitialRequest =>
+                maybeAbort(e, FailedDueToOther)
+              case RetryOn(decision) =>
+                decision(e) match {
+                  case DoNotRetry =>
+                    throw e
+                  case DoRetry(markBad) =>
+                    maybeAbort(e, FailedDueToOther, markBad)
+                }
             }
         }
       case None =>
