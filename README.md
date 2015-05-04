@@ -48,3 +48,11 @@ Releasing
 =========
 
 Run `sbt-release` and set an appropriate version.
+
+Perf Benchmarking
+=================
+
+The perf project uses JMH for precise performance profiling as well as stack-based profiling of top methods
+
+    project perf
+    run -i 3 -wi 10 -prof stack -jvmArgsAppend -Djmh.stack.lines=7
