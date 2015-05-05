@@ -11,11 +11,12 @@ val commonDeps = Seq(
   "org.apache.curator" % "curator-x-discovery" % "2.4.2" % "optional",
   "com.socrata"       %% "socrata-http-jetty"  % "3.0.2" % "optional",
   "com.socrata"       %% "socrata-http-client" % "3.0.2" % "optional",
+  "com.nativelibs4java" %% "scalaxy-loops"     % "0.3.3" % "provided",
   "org.scalacheck"    %% "scalacheck"          % "1.12.2" % "test",
   "org.scalatest"     %% "scalatest"           % "2.2.1" % "test",
   "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
   "com.rojoma"        %% "simple-arm-v2"       % "2.0.0" % "optional",
-  "com.rojoma"        %% "rojoma-json-v3"      % "3.2.1" % "optional",
+  "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "optional",
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
   "io.dropwizard.metrics" % "metrics-jetty9"   % "3.1.0" % "optional",
@@ -31,7 +32,7 @@ val testDeps = Seq(
   "org.apache.curator" % "curator-test"        % "2.4.2" % "optional"
 )
 
-val mySettings = socrataSettings() ++ Seq(scalaVersion := "2.10.0")
+val mySettings = socrataSettings() ++ Seq(scalaVersion := "2.10.4")
 
 mySettings
 
@@ -44,6 +45,13 @@ val test = project.settings(
              name := "socrata-thirdparty-test-utils",
              libraryDependencies ++= commonDeps ++ testDeps
            ).settings(mySettings:_*)
+           .dependsOn(core)
+
+val perf = project.settings(
+             name := "socrata-thirdparty-utils-perf",
+             libraryDependencies ++= commonDeps
+           ).settings(mySettings:_*)
+            .settings(jmhSettings:_*)
            .dependsOn(core)
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oFD")
