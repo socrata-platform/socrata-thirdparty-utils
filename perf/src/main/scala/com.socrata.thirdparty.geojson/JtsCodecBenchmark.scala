@@ -37,10 +37,12 @@ class JtsCodecBenchmark {
   @BenchmarkMode(Array(Mode.AverageTime))
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   def encodeGeoms: Unit = {
-    var i = 0
-    while (i < 10000) {
-      encode(p)
-      i += 1
+    @annotation.tailrec def innerEncoder(iters: Int): Unit = {
+      if (iters > 0) {
+        encode(p)
+        innerEncoder(iters - 1)
+      }
     }
+    innerEncoder(10000)
   }
 }

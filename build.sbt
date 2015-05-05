@@ -32,7 +32,7 @@ val testDeps = Seq(
   "org.apache.curator" % "curator-test"        % "2.4.2" % "optional"
 )
 
-val mySettings = socrataSettings() ++ Seq(scalaVersion := "2.10.0")
+val mySettings = socrataSettings() ++ Seq(scalaVersion := "2.10.4")
 
 mySettings
 
