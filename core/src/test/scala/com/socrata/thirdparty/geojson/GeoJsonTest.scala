@@ -70,7 +70,14 @@ trait GeoTest {
       p3 <- Arbitrary.arbitrary[Polygon]
 
     } yield factory.createMultiPolygon(Array(p, p1, p2, p3))
+  }
 
+  implicit val arbMultiPoint = Arbitrary[MultiPoint] {
+    for{
+      p0 <- Arbitrary.arbitrary[Coordinate]
+      p1 <- Arbitrary.arbitrary[Coordinate]
+      p2 <- Arbitrary.arbitrary[Coordinate]
+    } yield factory.createMultiPoint(Array(p0, p1, p2))
   }
 
 

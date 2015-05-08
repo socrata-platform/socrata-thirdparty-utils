@@ -115,7 +115,9 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
 
 
       geoCodec.decode(encode(mps)) should equal (Right(mps))
-
+      forAll{(mps: MultiPoint) =>
+        geoCodec.decode(encode(mps)) should equal(Right(mps))
+      }
     }
 
     it("should not convert non-GeoJSON or unsupported types") {
