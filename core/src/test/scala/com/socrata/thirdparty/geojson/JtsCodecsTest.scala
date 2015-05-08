@@ -103,7 +103,21 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
       forAll{(mp: MultiPolygon) =>
         geoCodec.decode(encode(mp)) should equal (Right(mp))
       }
+    }
 
+
+    it("should convert geometry JSON of type MultiPoint") {
+      val body = """{ "type": "MultiPoint",
+          |"coordinates": [ [0, 0], [10.1, 10.1] ]
+          |}""".stripMargin
+        val mps = factory.createMultiPoint(Array(coord(0.0, 0.0), coord(10.10, 10.10)))
+      decodeString(body) should be (Right(mps))
+
+
+      geoCodec.decode(encode(mps)) should equal (Right(mps))
+      forAll{(mps: MultiPoint) =>
+        geoCodec.decode(encode(mps)) should equal(Right(mps))
+      }
     }
 
     it("should not convert non-GeoJSON or unsupported types") {
