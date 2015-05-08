@@ -7,6 +7,7 @@ import com.rojoma.json.v3.util._
 import com.vividsolutions.jts.geom._
 import scalaxy.loops._
 import scala.language.postfixOps
+
 /**
  * JsonCodecs for various jts.geom._ objects for GeoJSON.
  * All of the Codecs except for GeometryCodec decodes the "coordinates" of a Geometry.
@@ -44,6 +45,7 @@ object JtsCodecs {
       CoordinateCodec.decode(json).right.map(factory.createPoint)
   }
 
+
   implicit object LineStringCodec extends JsonEncode[LineString] with JsonDecode[LineString] {
     def encode(line: LineString): JValue = JsonEncode[Array[Coordinate]].encode(line.getCoordinates)
 
@@ -76,35 +78,42 @@ object JtsCodecs {
     }
   }
 
+  implicit class GeometryCollectionUtils(mp: GeometryCollection) {
+    def map[B](f: Geometry => B): Seq[B] =
+      (0 until mp.getNumGeometries).map { idx => f(mp.getGeometryN(idx)) }
+  }
+
   implicit object MultiPolygonCodec extends JsonEncode[MultiPolygon] with JsonDecode[MultiPolygon] {
     def encode(mp: MultiPolygon): JValue =
-      JsonEncode[Array[Polygon]].encode((0 until mp.getNumGeometries).map { idx =>
-        mp.getGeometryN(idx) match { case p: Polygon => p }
-      }.toArray)
+      JsonEncode.toJValue(mp.map(_.asInstanceOf[Polygon]))
 
     def decode(json: JValue): JsonDecode.DecodeResult[MultiPolygon] =
       JsonDecode[Array[Polygon]].decode(json).right.map(factory.createMultiPolygon)
   }
 
   implicit object MultiLineStringCodec extends JsonEncode[MultiLineString] with JsonDecode[MultiLineString] {
-    def encode(mls: MultiLineString): JValue =
-      JsonEncode[Array[LineString]].encode((0 until mls.getNumGeometries).map { idx =>
-        mls.getGeometryN(idx) match { case ls: LineString => ls }
-      }.toArray)
+   def encode(mls: MultiLineString): JValue =
+     JsonEncode.toJValue(mls.map(_.asInstanceOf[LineString]))
 
     def decode(json: JValue): JsonDecode.DecodeResult[MultiLineString] =
       JsonDecode[Array[LineString]].decode(json).right.map(factory.createMultiLineString)
   }
 
+  implicit object MultiPointCodec extends JsonEncode[MultiPoint] with JsonDecode[MultiPoint] {
+    def encode(mp: MultiPoint): JValue =
+      JsonEncode.toJValue(mp.map(_.asInstanceOf[Point]))
+
+    def decode(json: JValue): JsonDecode.DecodeResult[MultiPoint] =
+      JsonDecode[Array[Point]].decode(json).right.map(factory.createMultiPoint)
+  }
+
   implicit val geoCodec = SimpleHierarchyCodecBuilder[Geometry](TagAndValue("type", "coordinates")).
-                             branch[Point]("Point").
-                             branch[LineString]("LineString").
-                             branch[Polygon]("Polygon").
-                             branch[MultiPolygon]("MultiPolygon").
-                             branch[MultiLineString]("MultiLineString").
-                             build
-
-
-
+                            branch[Point]("Point").
+                            branch[MultiPoint]("MultiPoint").
+                            branch[LineString]("LineString").
+                            branch[MultiLineString]("MultiLineString").
+                            branch[Polygon]("Polygon").
+                            branch[MultiPolygon]("MultiPolygon").
+                            build
 
 }
