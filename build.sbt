@@ -17,6 +17,7 @@ val commonDeps = Seq(
   "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
   "com.rojoma"        %% "simple-arm-v2"       % "2.0.0" % "optional",
   "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "optional",
+  "org.scalatra"      %% "scalatra"            % "2.2.2" % "optional",
   "com.vividsolutions" % "jts"                 % "1.13" % "optional",
   "nl.grons"          %% "metrics-scala"       % "3.3.0" % "optional",
   "io.dropwizard.metrics" % "metrics-jetty9"   % "3.1.0" % "optional",
