@@ -3,8 +3,9 @@ package com.socrata.thirdparty.scalatra
 import org.scalatra.ScalatraServlet
 import org.slf4j.LoggerFactory
 
-trait RequestLogging extends ScalatraServlet {
+trait RequestLogging { this: ScalatraServlet =>
   val logger = LoggerFactory.getLogger(getClass)
+
   before() {
     logger.info(request.getMethod + " - " + request.getRequestURI + " ? " + request.getQueryString)
   }

@@ -6,6 +6,7 @@ import scala.util.Try
 trait RequestParams { this: ScalatraBase =>
   private def invalidParamError(paramName: String) =
     halt(BadRequest(s"Invalid $paramName param provided in the request"))
+
   private def missingParamError(paramName: String) =
     halt(BadRequest(s"No $paramName param provided in the request"))
 
@@ -24,10 +25,12 @@ trait RequestParams { this: ScalatraBase =>
     optionalInput(name, default, extract, convert).getOrElse(missingParamError(name))
 
   def queryParam(name: String): Option[String] = params.get(name)
+
   def header(name: String): Option[String]     = request.headers.get(name)
 
   def mandatoryQueryParam(name: String, default: Option[String] = None): String =
     mandatoryInput(name, default, queryParam, _.toString)
+
   def mandatoryHeader(name: String, default: Option[String] = None): String =
     mandatoryInput(name, default, header, _.toString)
 }
