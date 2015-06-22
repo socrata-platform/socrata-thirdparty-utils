@@ -5,7 +5,7 @@ import java.util.concurrent.{Executor, Executors}
 import com.rojoma.simplearm.v2.conversions._
 import com.rojoma.simplearm.v2.{Managed, Resource, managed}
 
-import com.socrata.http.client.HttpClientHttpClient
+import com.socrata.http.client.{HttpClient, HttpClientHttpClient}
 
 object DiscoveryBrokerFromConfig {
   private def defaultExecutor = {
@@ -13,6 +13,18 @@ object DiscoveryBrokerFromConfig {
     implicit val timeout = Resource.executorShutdownNoTimeout
 
     managed(Executors.newCachedThreadPool())
+  }
+
+  /** Builds a DiscoveryBroker from configuration.
+    *
+    * @param discoveryConfig discovery config.
+    * @param http The http client to use when making HTTP requests.
+    */
+  def apply(config: DiscoveryBrokerConfig, http: HttpClient): Managed[DiscoveryBroker] = {
+    for {
+      curator <- CuratorFromConfig(config.curator)
+      discovery <- DiscoveryFromConfig(classOf[Void], curator, config.discovery)
+    } yield new DiscoveryBroker(discovery, http)
   }
 
   /** Builds a DiscoveryBroker from configuration.
