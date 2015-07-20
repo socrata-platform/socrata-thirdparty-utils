@@ -24,7 +24,7 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
                     |  "coordinates": [6.0, 1.2]
                     |}""".stripMargin
       val pt = decodeString(body).asInstanceOf[JsonDecode.DecodeResult[Point]].right.get
-      (pt.getX, pt.getY) should equal (6.0, 1.2)
+      (pt.getX, pt.getY) should equal ((6.0, 1.2))
 
       // uses implicit arbitrary.
       forAll { (point: Point) =>
@@ -132,7 +132,7 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
   describe("coordinates") {
     it("should convert Points correctly") {
       val pt = PointCodec.decode(pointCoords).right.get
-      (pt.getX, pt.getY) should equal (6.0, 1.2)
+      (pt.getX, pt.getY) should equal ((6.0, 1.2))
     }
 
     it("should not convert non-Points") {
