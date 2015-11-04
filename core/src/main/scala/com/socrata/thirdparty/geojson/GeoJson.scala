@@ -4,6 +4,7 @@ import com.rojoma.json.v3.ast._
 import com.rojoma.json.v3.codec._
 import com.rojoma.json.v3.util._
 import com.vividsolutions.jts.geom._
+import JtsCodecs._
 
 sealed trait GeoJsonBase
 
@@ -24,7 +25,7 @@ case class CRS(@JsonKey("type") crsType: String, properties: Map[String, JValue]
   * {{{
   *   val geoJson = GeoJson.codec.decode(JsonReader.fromString(jsonString))
   *   geoJson match {
-  *     case Some(FeatureCollectionJson(features, _)) => features.foreach(println)
+  *     case Some(FeatureCollectionJson(features, _)) => features.foreach(print ln)
   *   }
   * }}}
   *
@@ -33,8 +34,6 @@ case class CRS(@JsonKey("type") crsType: String, properties: Map[String, JValue]
   * TODO(velvia): represent CRS as a real case class
   */
 object GeoJson {
-  import JtsCodecs._
-
   implicit val crsJsonCodec = AutomaticJsonCodecBuilder[CRS]
 
   implicit val codec = locally {

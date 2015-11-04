@@ -15,27 +15,29 @@ class ConnectionCustomizer extends AbstractConnectionCustomizer {
   private val logger: MLogger = MLog.getLogger(classOf[ConnectionCustomizer])
 
   private def getConfig(parentDataSourceIdentityToken: String, configName: String): Option[String] = {
-    return Option(extensionsForToken(parentDataSourceIdentityToken).get(configName).asInstanceOf[String])
+    Option(extensionsForToken(parentDataSourceIdentityToken).get(configName).asInstanceOf[String])
   }
 
   /**
    * Do not call this function from onDestroy or onCheckIn.  Calling extensionsForToken can cause deadlock on shut down.
    */
-  private def onEvent(c: Connection, parentDataSourceIdentityToken: String, event: String) {
+  private def onEvent(c: Connection, parentDataSourceIdentityToken: String, event: String): Unit = {
     val sql = getConfig(parentDataSourceIdentityToken, event)
     sql.foreach { s =>
       using(c.createStatement()) { stmt =>
         val result = stmt.executeUpdate(s)
-        if (logger.isLoggable(MLevel.FINEST)) logger.log(MLevel.FINEST, s"Executed $event statement $s on connection $c returned $result")
+        if (logger.isLoggable(MLevel.FINEST)) {
+          logger.log(MLevel.FINEST, s"Executed $event statement $s on connection $c returned $result")
+        }
       }
     }
   }
 
-  override def onAcquire(c: Connection, parentDataSourceIdentityToken: String) {
+  override def onAcquire(c: Connection, parentDataSourceIdentityToken: String): Unit = {
     onEvent(c, parentDataSourceIdentityToken, "onAcquire")
   }
 
-  override def onCheckOut(c: Connection, parentDataSourceIdentityToken: String) {
+  override def onCheckOut(c: Connection, parentDataSourceIdentityToken: String): Unit = {
     onEvent(c, parentDataSourceIdentityToken, "onCheckOut")
   }
 }

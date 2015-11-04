@@ -39,11 +39,9 @@ class C3P0PropertizerTest extends FunSuite with MustMatchers {
   test("With a new root") {
     val props = C3P0Propertizer("foo", c3p0Config.getConfig("c3p0"))
     val targetProps = new Properties
-    for((k,v) <- c3p0Props.asInstanceOf[java.util.Map[String,Object]].asScala) {
+    for {(k,v) <- c3p0Props.asInstanceOf[java.util.Map[String,Object]].asScala} {
       targetProps.put("foo." + k, v)
     }
     props must equal (targetProps)
   }
-
-
 }

@@ -1,10 +1,10 @@
 package com.socrata.thirdparty.typesafeconfig
 
+import java.util
+
+import com.typesafe.config.{Config, ConfigValue, ConfigValueType}
+
 import scala.collection.JavaConverters._
-
-import java.util.Properties
-
-import com.typesafe.config.{Config, ConfigValueType}
 
 /** Converts a Config object into a Properties object.  This is
   * designed to be used with Log4j's `PropertyConfigurator`.
@@ -14,7 +14,7 @@ import com.typesafe.config.{Config, ConfigValueType}
   * "name" (or "class", since these things frequently represent
   * an object creation) and "props", the "name" (or "class") and
   * "props" subkeys are removed.
-  * 
+  *
   * For example:
   * {{{
   * log4j {
@@ -36,26 +36,25 @@ import com.typesafe.config.{Config, ConfigValueType}
   * log4j.appender.console.layout.ConversionPattern=[%t] %d %c %m%n
   * }}}
   */
-object Propertizer extends ((String, Config) => Properties) {
+object Propertizer extends ((String, Config) => util.Properties) {
   private val NameKey = "name"
   private val ClassKey = "class"
   private val PropsKey = "props"
 
-  private def subtree(props: Properties, root: String, obj: Config) {
+  // scalastyle:ignore cyclomatic.complexity
+  private def subtree(props: util.Properties, root: String, obj: Config): Unit = {
     def nestedRoot(s: String) = if(root == "") s else root + "." + s
 
     val isPair = {
       val keys = obj.root.entrySet.asScala.collect {
-        case kv if kv.getValue.valueType != ConfigValueType.NULL => kv.getKey
+        case kv: util.Map.Entry[String,ConfigValue] if kv.getValue.valueType != ConfigValueType.NULL => kv.getKey
       }
       keys.size == 2 && (keys.contains(NameKey) || keys.contains(ClassKey)) && keys.contains(PropsKey)
     }
 
     val remainder =
-      if(isPair) {
-        val rootProp =
-          if(obj.root.containsKey(NameKey)) NameKey
-          else ClassKey
+      if (isPair) {
+        val rootProp = if (obj.root.containsKey(NameKey)) NameKey else ClassKey
         props.put(root, obj.getString(rootProp))
         obj.getConfig(PropsKey)
       } else {
@@ -74,7 +73,7 @@ object Propertizer extends ((String, Config) => Properties) {
     }
   }
 
-  def apply(root: String, config: Config): Properties = {
+  def apply(root: String, config: Config): util.Properties = {
     val props = new java.util.Properties
     subtree(props, root, config)
     props

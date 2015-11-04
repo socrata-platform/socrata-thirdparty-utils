@@ -3,19 +3,18 @@ package com.socrata.thirdparty.geojson
 import com.rojoma.json.v3.ast._
 import com.rojoma.json.v3.codec.{DecodeError, JsonDecode}
 import com.rojoma.json.v3.io.JsonReader
+import com.socrata.thirdparty.geojson.JtsCodecs._
 import com.vividsolutions.jts.geom._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.{FunSpec, Matchers}
 
 class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTest {
-  import com.socrata.thirdparty.geojson.JtsCodecs._
-
   val pointCoords = JArray(Seq(JNumber(6.0), JNumber(1.2)))
   val point2Coords = JArray(Seq(JNumber(3.4), JNumber(-2.7)))
   val lineCoords = JArray(Seq(pointCoords, point2Coords))
 
-  def decodeString(str: String) = geoCodec.decode(JsonReader.fromString(str))
-  def encode(geom: Geometry)    = geoCodec.encode(geom)
+  def decodeString(str: String): JsonDecode.DecodeResult[Geometry] = geoCodec.decode(JsonReader.fromString(str))
+  def encode(geom: Geometry): JValue = geoCodec.encode(geom)
 
   describe("GeometryCodec") {
     it("should convert geometry JSON of type Point correctly") {
@@ -71,7 +70,7 @@ class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTe
                    |}""".stripMargin
       val decoded = decodeString(body)
       decoded should be ('left)
-      decoded.left.get should be (a [DecodeError.InvalidValue])
+      decoded.left.get should be (a[DecodeError.InvalidValue])
     }
 
     it("should convert geometry JSON of MultiLineString") {

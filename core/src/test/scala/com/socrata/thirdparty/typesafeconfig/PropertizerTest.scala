@@ -35,7 +35,7 @@ class PropertizerTest extends FunSuite with MustMatchers {
   test("With a new root") {
     val props = Propertizer("foo", log4jConfig)
     val targetProps = new Properties
-    for((k,v) <- log4jProps.asScala) {
+    for {(k,v) <- log4jProps.asScala} {
       targetProps.put("foo." + k, v)
     }
     props must equal (targetProps)
