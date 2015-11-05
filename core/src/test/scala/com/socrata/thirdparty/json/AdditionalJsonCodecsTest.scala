@@ -28,7 +28,7 @@ class AdditionalJsonCodecsTest extends FunSuite with Matchers with PropertyCheck
     .millisOfSecond.withMaximumValue
 
   implicit val ArbitraryDateTime = Arbitrary {
-    for (x <- Gen.choose(minDateTime.getMillis, maxDateTime.getMillis)) yield new DateTime(x)
+    for {x <- Gen.choose(minDateTime.getMillis, maxDateTime.getMillis)} yield new DateTime(x)
   }
 
   test("DateTime Codec") {

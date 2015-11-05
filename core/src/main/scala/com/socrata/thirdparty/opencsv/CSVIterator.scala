@@ -11,19 +11,19 @@ final class CSVIterator private (reader: CSVReader) extends Iterator[IndexedSeq[
   private val it = locally {
     def loop(): Stream[IndexedSeq[String]] = {
       reader.readNext() match {
-        case null => Stream.empty
-        case row => row #:: loop()
+        case row: Array[String] if Option(row).isDefined => row #:: loop()
+        case _ => Stream.empty
       }
     }
     loop().iterator
   }
 
-  def hasNext = it.hasNext
-  def next() = it.next()
-  override def toStream = it.toStream
-  override def toSeq = it.toStream
+  def hasNext: Boolean = it.hasNext
+  def next(): IndexedSeq[String] = it.next()
+  override def toStream: Stream[IndexedSeq[String]] = it.toStream
+  override def toSeq: Stream[IndexedSeq[String]] = it.toStream
 
-  def close() {
+  def close(): Unit = {
     reader.close()
   }
 }
@@ -36,7 +36,7 @@ object CSVIterator {
                escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
                skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
                strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
-               ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) = {
+               ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE): CSVIterator = {
     val inputStream = new FileInputStream(filename)
     try {
       new CSVIterator(new CSVReader(new InputStreamReader(inputStream, codec.charSet),
@@ -60,7 +60,7 @@ object CSVIterator {
                       escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
                       skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
                       strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
-                      ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) = {
+                      ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE): CSVIterator = {
     new CSVIterator(new CSVReader(new InputStreamReader(inputStream, codec.charSet),
       separator,
       quote,
@@ -76,7 +76,7 @@ object CSVIterator {
                  escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
                  skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
                  strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
-                 ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) = {
+                 ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE): CSVIterator = {
     new CSVIterator(new CSVReader(reader,
         separator,
         quote,
@@ -92,7 +92,7 @@ object CSVIterator {
                  escape: Char = CSVParser.DEFAULT_ESCAPE_CHARACTER,
                  skipLines: Int = CSVReader.DEFAULT_SKIP_LINES,
                  strictQuotes: Boolean = CSVParser.DEFAULT_STRICT_QUOTES,
-                 ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE) = {
+                 ignoreLeadingWhitespace: Boolean = CSVParser.DEFAULT_IGNORE_LEADING_WHITESPACE): CSVIterator = {
     new CSVIterator(new CSVReader(new StringReader(string),
         separator,
         quote,

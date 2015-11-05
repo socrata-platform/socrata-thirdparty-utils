@@ -10,12 +10,12 @@ import org.scalatest.{Matchers, FunSpec}
 
 trait GeoTest {
   val factory = new GeometryFactory
-  def coord(x: Double, y: Double) = new Coordinate(x, y)
-  def mkCoord(xy: (Double, Double)) = (coord _).tupled(xy)
-  def linestring(coords: (Double, Double)*) = factory.createLineString(coords.map(mkCoord).toArray)
-  def ring(coords: Seq[(Double, Double)]) = factory.createLinearRing(coords.map(mkCoord).toArray)
-  def polygon(coords: (Double, Double)*) = factory.createPolygon(ring(coords), Array.empty)
-  def polygon(outer: Seq[(Double, Double)], inner: Seq[Seq[(Double, Double)]] = Seq.empty) =
+  def coord(x: Double, y: Double): Coordinate = new Coordinate(x, y)
+  def mkCoord(xy: (Double, Double)): Coordinate = (coord _).tupled(xy)
+  def linestring(coords: (Double, Double)*): LineString = factory.createLineString(coords.map(mkCoord).toArray)
+  def ring(coords: Seq[(Double, Double)]): LinearRing = factory.createLinearRing(coords.map(mkCoord).toArray)
+  def polygon(coords: (Double, Double)*): Polygon = factory.createPolygon(ring(coords), Array.empty)
+  def polygon(outer: Seq[(Double, Double)], inner: Seq[Seq[(Double, Double)]] = Seq.empty): Polygon =
     factory.createPolygon(ring(outer), inner.map(ring).toArray)
 
 
@@ -37,8 +37,8 @@ trait GeoTest {
   }
 
   implicit val arbPoly = Arbitrary[Polygon] {
-    def mkRing(lon: Double, lat: Double, size: Double) = {
-      ring(Seq((lon, lat),(lon+size, lat),(lon+size, lat+size),(lon, lat+size),(lon, lat)))
+    def mkRing(lon: Double, lat: Double, size: Double): LinearRing = {
+      ring(Seq((lon, lat), (lon + size, lat), (lon + size, lat + size), (lon, lat + size), (lon, lat)))
     }
 
     for {

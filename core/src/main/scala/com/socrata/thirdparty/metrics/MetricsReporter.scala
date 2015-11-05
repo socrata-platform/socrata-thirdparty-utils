@@ -46,7 +46,7 @@ class MetricsReporter(options: MetricsOptions, registry: MetricRegistry = Metric
     graphiteReporter.start(options.reportingIntervalSecs, TimeUnit.SECONDS)
   }
 
-  def stop() {
+  def stop(): Unit = {
     logger.info("Shutting down reporters...")
     if (options.logMetrics) slf4jReporter.stop()
     if (options.enableJmx) jmxReporter.stop()
