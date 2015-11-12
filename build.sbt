@@ -3,7 +3,14 @@ import com.socrata.cloudbeessbt.SocrataCloudbeesSbt.socrataSettings
 
 previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") }
 
+def astyanaxExcludes(x: ModuleID) = x exclude ("commons-logging", "commons-logging") exclude ("org.mortbay.jetty", "servlet-api") exclude ("javax.servlet", "servlet-api")
+val astyanaxVersion =  "1.56.48"
+val astyanaxCassandra = astyanaxExcludes("com.netflix.astyanax" % "astyanax-cassandra" % astyanaxVersion % "provided")
+val astyanaxThrift = astyanaxExcludes("com.netflix.astyanax" % "astyanax-thrift" % astyanaxVersion % "provided")
+
 val commonDeps = Seq(
+  astyanaxCassandra,
+  astyanaxThrift,
   "org.slf4j"          % "slf4j-api"           % "1.7.5",
   "net.sf.opencsv"     % "opencsv"             % "2.3" % "provided",
   "com.typesafe"       % "config"              % "1.0.0" % "provided",
@@ -13,7 +20,7 @@ val commonDeps = Seq(
   "org.scalacheck"    %% "scalacheck"          % "1.12.2" % "test",
   "org.scalatest"     %% "scalatest"           % "2.2.1" % "test",
   "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
-  "com.rojoma"        %% "simple-arm-v2"       % "2.0.0" % "provided",
+  "com.rojoma"        %% "simple-arm-v2"       % "[2.1.0,3.0.0)" % "provided",
   "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "provided",
   "org.scalatra"      %% "scalatra"            % "2.3.0" % "provided",
   "com.vividsolutions" % "jts"                 % "1.13" % "provided",
