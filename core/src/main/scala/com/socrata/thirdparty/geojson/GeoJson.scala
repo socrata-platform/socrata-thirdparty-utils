@@ -25,7 +25,7 @@ case class CRS(@JsonKey("type") crsType: String, properties: Map[String, JValue]
   * {{{
   *   val geoJson = GeoJson.codec.decode(JsonReader.fromString(jsonString))
   *   geoJson match {
-  *     case Some(FeatureCollectionJson(features, _)) => features.foreach(print ln)
+  *     case Some(FeatureCollectionJson(features, _)) => features.foreach(println)
   *   }
   * }}}
   *

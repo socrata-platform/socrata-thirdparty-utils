@@ -47,7 +47,7 @@ object Propertizer extends ((String, Config) => util.Properties) {
 
     val isPair = {
       val keys = obj.root.entrySet.asScala.collect {
-        case kv: util.Map.Entry[String,ConfigValue] if kv.getValue.valueType != ConfigValueType.NULL => kv.getKey
+        case kv if kv.getValue.valueType != ConfigValueType.NULL => kv.getKey
       }
       keys.size == 2 && (keys.contains(NameKey) || keys.contains(ClassKey)) && keys.contains(PropsKey)
     }

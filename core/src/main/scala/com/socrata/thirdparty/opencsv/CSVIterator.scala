@@ -11,8 +11,8 @@ final class CSVIterator private (reader: CSVReader) extends Iterator[IndexedSeq[
   private val it = locally {
     def loop(): Stream[IndexedSeq[String]] = {
       reader.readNext() match {
-        case row: Array[String] if Option(row).isDefined => row #:: loop()
-        case _ => Stream.empty
+        case null => Stream.empty
+        case row => row #:: loop()
       }
     }
     loop().iterator

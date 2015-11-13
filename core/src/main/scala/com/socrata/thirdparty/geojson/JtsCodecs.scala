@@ -23,7 +23,12 @@ object JtsCodecs {
 
   implicit object CoordinateCodec extends JsonEncode[Coordinate] with JsonDecode[Coordinate] {
     def encode(pt: Coordinate): JValue =
-      JArray(Seq(pt.x, pt.y, pt.z).filterNot(_.isNaN).map(i => JNumber(i)))
+      if (pt.z.isNaN)
+        JArray(Seq(JNumber(pt.x), JNumber(pt.y)))
+      else
+        JArray(Seq(JNumber(pt.x), JNumber(pt.y), JNumber(pt.z)))
+
+
 
     def decode(json: JValue): JsonDecode.DecodeResult[Coordinate] =
       json match {
