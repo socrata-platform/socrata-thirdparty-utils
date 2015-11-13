@@ -11,6 +11,10 @@ object AstyanaxFromConfig {
   }
 
   def apply(config: CassandraConfig) = managed {
+    unmanaged(config)
+  }.and(_.start())
+
+  def unmanaged(config: CassandraConfig) =
     new AstyanaxContext.Builder().
       forCluster(config.cluster).
       forKeyspace(config.keyspace).
@@ -27,5 +31,4 @@ object AstyanaxFromConfig {
       ).
       withConnectionPoolMonitor(new connectionpool.impl.CountingConnectionPoolMonitor()).
       buildKeyspace(thrift.ThriftFamilyFactory.getInstance())
-  }.and(_.start())
 }
