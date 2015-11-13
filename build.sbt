@@ -36,6 +36,8 @@ val testDeps = Seq(
   "org.apache.curator" % "curator-test"        % "2.4.2" % "provided"
 )
 
+publish := {} // do not publish the root directory
+
 val commonSettings = Seq(
   // TODO: enable code coverage build failures
   scoverage.ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false,
