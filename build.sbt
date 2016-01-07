@@ -65,4 +65,6 @@ val perf = project.settings(
             .settings(jmhSettings:_*)
            .dependsOn(core)
 
+commonSettings
+
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oFD")
