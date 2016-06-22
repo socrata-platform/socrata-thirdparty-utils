@@ -14,21 +14,25 @@ object AstyanaxFromConfig {
     unmanaged(config)
   }.and(_.start())
 
-  def unmanaged(config: CassandraConfig) =
+  def unmanaged(config: CassandraConfig) = {
+    val connectionPoolConfiguration =
+      new connectionpool.impl.ConnectionPoolConfigurationImpl(config.connectionPool.name).
+        setPort(config.connectionPool.port).
+        setMaxConnsPerHost(config.connectionPool.maxConnectionsPerHost).
+        setSeeds(config.connectionPool.seeds).
+        setConnectTimeout(config.connectionPool.connectTimeout.toMillis.toInt)
+    config.connectionPool.datacenter.foreach(connectionPoolConfiguration.setLocalDatacenter)
+
     new AstyanaxContext.Builder().
       forCluster(config.cluster).
       forKeyspace(config.keyspace).
       withAstyanaxConfiguration(new impl.AstyanaxConfigurationImpl().
-      setDiscoveryType(connectionpool.NodeDiscoveryType.RING_DESCRIBE).
-      setDefaultReadConsistencyLevel(ConsistencyLevel.CL_QUORUM).
-      setDefaultWriteConsistencyLevel(ConsistencyLevel.CL_QUORUM)
+        setDiscoveryType(connectionpool.NodeDiscoveryType.RING_DESCRIBE).
+        setDefaultReadConsistencyLevel(ConsistencyLevel.CL_QUORUM).
+        setDefaultWriteConsistencyLevel(ConsistencyLevel.CL_QUORUM)
       ).
-      withConnectionPoolConfiguration(new connectionpool.impl.ConnectionPoolConfigurationImpl(config.connectionPool.name).
-      setPort(config.connectionPool.port).
-      setMaxConnsPerHost(config.connectionPool.maxConnectionsPerHost).
-      setSeeds(config.connectionPool.seeds).
-      setConnectTimeout(config.connectionPool.connectTimeout.toMillis.toInt)
-      ).
+      withConnectionPoolConfiguration(connectionPoolConfiguration).
       withConnectionPoolMonitor(new connectionpool.impl.CountingConnectionPoolMonitor()).
       buildKeyspace(thrift.ThriftFamilyFactory.getInstance())
+  }
 }
