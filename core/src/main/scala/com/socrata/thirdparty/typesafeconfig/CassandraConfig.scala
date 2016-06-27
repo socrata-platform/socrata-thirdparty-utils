@@ -14,5 +14,7 @@ class CassandraConnectionPoolConfig(config: Config, root: String) extends Config
   val maxConnectionsPerHost = getInt("max-connections-per-host")
   val seeds = getStringList("seeds").mkString(",")
   val connectTimeout = getDuration("connect-timeout")
-  val datacenter = optionally[String]("datacenter")
+  val datacenter = optionally[String](
+    getString("datacenter")
+  )
 }
