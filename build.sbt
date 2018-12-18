@@ -20,7 +20,6 @@ val commonDeps = Seq(
   "org.apache.curator" % "curator-x-discovery" % "2.4.2" % "provided",
   "com.nativelibs4java" %% "scalaxy-loops"     % "0.3.3" % "provided",
   "org.scalacheck"    %% "scalacheck"          % "1.12.2" % "test",
-  "com.rojoma"        %% "simple-arm"          % "[1.2.0,2.0.0)",
   "com.rojoma"        %% "simple-arm-v2"       % "[2.1.0,3.0.0)" % "provided",
   "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "provided",
   "org.scalatra"      %% "scalatra"            % "2.3.0" % "provided",

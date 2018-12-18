@@ -4,7 +4,7 @@ import java.sql.Connection
 
 import com.mchange.v2.c3p0.AbstractConnectionCustomizer
 import com.mchange.v2.log.{MLevel, MLog, MLogger}
-import com.rojoma.simplearm.util.using
+import com.rojoma.simplearm.v2._
 
 /**
  * Implementation of c3p0's AbstractConnectionCustomizer to let you execute arbitrary sql statements
