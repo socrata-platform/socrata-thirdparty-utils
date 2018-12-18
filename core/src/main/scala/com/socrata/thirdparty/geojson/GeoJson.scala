@@ -1,7 +1,6 @@
 package com.socrata.thirdparty.geojson
 
 import com.rojoma.json.v3.ast._
-import com.rojoma.json.v3.codec._
 import com.rojoma.json.v3.util._
 import com.vividsolutions.jts.geom._
 import JtsCodecs._

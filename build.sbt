@@ -1,5 +1,8 @@
 import com.typesafe.tools.mima.plugin.MimaKeys.previousArtifact
 
+
+organization := "com.socrata"
+
 previousArtifact <<= scalaBinaryVersion { sv => Some("com.socrata" % ("socrata-thirdparty-utils_" + sv) % "2.0.0") }
 
 def astyanaxExcludes(x: ModuleID) = x exclude ("commons-logging", "commons-logging") exclude ("org.mortbay.jetty", "servlet-api") exclude ("javax.servlet", "servlet-api")
