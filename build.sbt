@@ -46,7 +46,8 @@ val commonSettings = Seq(
   // TODO: enable scalastyle build failures
   com.socrata.sbtplugins.StylePlugin.StyleKeys.styleFailOnError in Compile := false,
   scalaVersion := "2.11.7",
-  crossScalaVersions := Seq("2.10.4", scalaVersion.value)
+  crossScalaVersions := Seq("2.10.4", scalaVersion.value),
+  organization := "com.socrata"
 )
 
 val core = project.settings(
