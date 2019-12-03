@@ -5,10 +5,10 @@ import com.rojoma.json.v3.codec.{DecodeError, JsonDecode}
 import com.rojoma.json.v3.io.JsonReader
 import com.socrata.thirdparty.geojson.JtsCodecs._
 import com.vividsolutions.jts.geom._
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import org.scalatest.{FunSpec, Matchers}
 
-class JtsCodecsTest extends FunSpec with Matchers with PropertyChecks with GeoTest {
+class JtsCodecsTest extends FunSpec with Matchers with ScalaCheckPropertyChecks with GeoTest {
   val pointCoords = JArray(Seq(JNumber(6.0), JNumber(1.2)))
   val point2Coords = JArray(Seq(JNumber(3.4), JNumber(-2.7)))
   val lineCoords = JArray(Seq(pointCoords, point2Coords))

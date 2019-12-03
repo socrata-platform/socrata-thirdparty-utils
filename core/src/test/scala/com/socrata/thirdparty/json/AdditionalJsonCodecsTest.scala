@@ -5,9 +5,9 @@ import com.socrata.thirdparty.json.AdditionalJsonCodecs._
 import org.joda.time.DateTime
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-class AdditionalJsonCodecsTest extends FunSuite with Matchers with PropertyChecks {
+class AdditionalJsonCodecsTest extends FunSuite with Matchers with ScalaCheckPropertyChecks {
 
   val minDateTime = DateTime.now
     .year.withMinimumValue

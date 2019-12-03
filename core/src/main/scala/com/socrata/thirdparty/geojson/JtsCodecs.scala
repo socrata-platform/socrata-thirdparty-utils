@@ -5,7 +5,6 @@ import com.rojoma.json.v3.codec.DecodeError.{InvalidValue, InvalidType}
 import com.rojoma.json.v3.codec._
 import com.rojoma.json.v3.util._
 import com.vividsolutions.jts.geom._
-import scalaxy.loops._
 import scala.language.postfixOps
 
 /**
@@ -52,8 +51,11 @@ object JtsCodecs {
     def encode(polygon: Polygon): JValue = {
       val rings = new Array[Array[Coordinate]](polygon.getNumInteriorRing + 1)
       rings(0) = polygon.getExteriorRing.getCoordinates
-      for { ringNo <- 0 until polygon.getNumInteriorRing optimized } {
+
+      var ringNo = 0
+      while(ringNo < polygon.getNumInteriorRing) {
         rings(ringNo + 1) = polygon.getInteriorRingN(ringNo).getCoordinates
+        ringNo += 1
       }
 
       JsonEncode[Array[Array[Coordinate]]].encode(rings)
