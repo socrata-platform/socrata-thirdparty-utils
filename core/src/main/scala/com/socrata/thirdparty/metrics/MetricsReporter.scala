@@ -1,7 +1,8 @@
 package com.socrata.thirdparty.metrics
 
 import com.codahale.metrics.graphite.{Graphite, GraphiteReporter}
-import com.codahale.metrics.{MetricRegistry, Slf4jReporter, JmxReporter}
+import com.codahale.metrics.{MetricRegistry, Slf4jReporter}
+import com.codahale.metrics.jmx.JmxReporter
 import com.rojoma.simplearm.v2._
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
