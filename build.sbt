@@ -48,7 +48,7 @@ val testDeps = Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 )
 
-publish := {} // do not publish the root directory
+publish / skip := true
 
 val commonSettings = Seq(
   scalaVersion := "2.12.10",
