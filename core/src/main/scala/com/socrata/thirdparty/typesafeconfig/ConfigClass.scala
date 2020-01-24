@@ -11,6 +11,7 @@ abstract class ConfigClass(config: Config, root: String) {
 
   // we'll add more of these as we need them
   def getInt(key: String): Int = config.getInt(path(key))
+  def getLong(key: String): Long = config.getLong(path(key))
   def getString(key: String): String = config.getString(path(key))
   def getStringList(key: String): Seq[String] = config.getStringList(path(key)).asScala
   def getDuration(key: String): FiniteDuration = config.getMilliseconds(path(key)).longValue.millis
