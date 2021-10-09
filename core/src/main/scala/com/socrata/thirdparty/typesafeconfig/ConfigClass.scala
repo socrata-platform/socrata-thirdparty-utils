@@ -3,7 +3,7 @@ package com.socrata.thirdparty.typesafeconfig
 import com.typesafe.config.{Config, ConfigException, ConfigUtil}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /** A helper for making typed configurations. */
 abstract class ConfigClass(config: Config, root: String) {
@@ -13,7 +13,7 @@ abstract class ConfigClass(config: Config, root: String) {
   def getInt(key: String): Int = config.getInt(path(key))
   def getLong(key: String): Long = config.getLong(path(key))
   def getString(key: String): String = config.getString(path(key))
-  def getStringList(key: String): Seq[String] = config.getStringList(path(key)).asScala
+  def getStringList(key: String): Seq[String] = config.getStringList(path(key)).asScala.toSeq
   def getDuration(key: String): FiniteDuration = config.getMilliseconds(path(key)).longValue.millis
   def getBytes(key: String): Long = config.getBytes(path(key)).longValue
   def getBoolean(key: String): Boolean = config.getBoolean(path(key))
