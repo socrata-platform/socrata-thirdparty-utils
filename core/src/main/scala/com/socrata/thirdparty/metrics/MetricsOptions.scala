@@ -1,7 +1,7 @@
 package com.socrata.thirdparty.metrics
 
 import com.typesafe.config.{Config, ConfigFactory}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * Options for configuring metrics and reporters.
@@ -53,8 +53,8 @@ object MetricsOptions {
                         "enable-graphite" -> defEnableGraphite,
                         "graphite-host" -> defGraphiteHost,
                         "graphite-port" -> defGraphitePort,
-                        "reporting-interval" -> (defReportingIntervalSecs + " s"),
-                        "logging-interval" -> (defLoggingIntervalSecs + " s")
+                        "reporting-interval" -> s"$defReportingIntervalSecs s",
+                        "logging-interval" -> s"$defLoggingIntervalSecs s"
                       ).asJava)
 
   def apply(config: Config): MetricsOptions = {

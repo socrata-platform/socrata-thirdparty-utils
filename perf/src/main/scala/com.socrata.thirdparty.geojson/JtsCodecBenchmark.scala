@@ -6,6 +6,7 @@ import com.rojoma.json.v3.ast._
 import com.rojoma.json.v3.codec.JsonDecode
 import com.rojoma.json.v3.io.JsonReader
 import com.socrata.thirdparty.geojson.JtsCodecs._
+import com.socrata.thirdparty.EitherCompat._
 import com.vividsolutions.jts.geom._
 import org.openjdk.jmh.annotations.{Benchmark, BenchmarkMode, Mode, OutputTimeUnit, Scope, State}
 
@@ -28,7 +29,7 @@ class JtsCodecBenchmark {
                 |  "coordinates": [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
                 |                  [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]]
                 |}""".stripMargin
-  val p = decodeString(body).asInstanceOf[JsonDecode.DecodeResult[Polygon]].right.get
+  val p = decodeString(body).asInstanceOf[JsonDecode.DecodeResult[Polygon]].rightProjection.getOrThrow
 
   @Benchmark
   @BenchmarkMode(Array(Mode.AverageTime))

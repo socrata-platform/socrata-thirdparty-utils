@@ -4,7 +4,7 @@ import java.util
 
 import com.typesafe.config.{Config, ConfigValue, ConfigValueType}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /** Converts a Config object into a Properties object.  This is
   * designed to be used with Log4j's `PropertyConfigurator`.
@@ -61,7 +61,7 @@ object Propertizer extends ((String, Config) => util.Properties) {
         obj
       }
 
-    remainder.root.asScala.mapValues(_.valueType) foreach {
+    remainder.root.asScala.iterator.map { case (k,v) => (k, v.valueType) }.foreach {
       case (_, ConfigValueType.NULL) =>
         // pass
       case (k, ConfigValueType.OBJECT) =>

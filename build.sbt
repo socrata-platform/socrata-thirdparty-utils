@@ -9,16 +9,8 @@ val astyanaxThrift = astyanaxExcludes("com.netflix.astyanax" % "astyanax-thrift"
 
 def scalatraVersion(scalaVersion: String) =
   scalaVersion match {
-    case "2.10.4" => "2.3.0"
+    case "2.13.6" => "2.8.2"
     case _ => "2.5.0"
-  }
-
-def metrics(scalaVersion: String) =
-  scalaVersion match {
-    case "2.10.4" =>
-      "nl.grons" %% "metrics-scala" % "3.5.10" % "provided"
-    case _ =>
-      "nl.grons" %% "metrics4-scala" % "4.1.1" % "provided"
   }
 
 def commonDeps(scalaVersion: String) = Seq(
@@ -29,12 +21,13 @@ def commonDeps(scalaVersion: String) = Seq(
   "com.typesafe"       % "config"              % "1.0.0" % "provided",
   "com.ning"           % "async-http-client"   % "1.7.13" % "provided",
   "org.apache.curator" % "curator-x-discovery" % "2.4.2" % "provided",
-  "org.scalacheck"    %% "scalacheck"          % "1.13.4" % "test",
+  "org.scalacheck"    %% "scalacheck"          % "1.14.0" % "test",
   "com.rojoma"        %% "simple-arm-v2"       % "[2.1.0,3.0.0)" % "provided",
   "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "provided",
   "org.scalatra"      %% "scalatra"            % scalatraVersion(scalaVersion) % "provided",
+  "org.scala-lang.modules" %% "scala-collection-compat"  % "2.5.0",
   "com.vividsolutions" % "jts"                 % "1.13" % "provided",
-  metrics(scalaVersion),
+  "nl.grons" %% "metrics4-scala" % "4.1.1" % "provided",
   "io.dropwizard.metrics" % "metrics-jetty9"   % "4.1.1" % "provided",
   "io.dropwizard.metrics" % "metrics-graphite" % "4.1.1" % "provided",
   "io.dropwizard.metrics" % "metrics-jmx" % "4.1.1" % "provided",
@@ -51,8 +44,8 @@ val testDeps = Seq(
 publish / skip := true
 
 val commonSettings = Seq(
-  scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.10.4", "2.11.7", scalaVersion.value),
+  scalaVersion := "2.13.6",
+  crossScalaVersions := Seq("2.11.7", "2.12.10", scalaVersion.value),
   organization := "com.socrata",
   scalacOptions ++= Seq("-deprecation")
 )
