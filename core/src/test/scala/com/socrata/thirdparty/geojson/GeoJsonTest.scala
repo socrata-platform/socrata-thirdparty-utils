@@ -2,8 +2,8 @@ package com.socrata.thirdparty.geojson
 
 import com.rojoma.json.v3.ast._
 import com.rojoma.json.v3.io.JsonReader
-import com.vividsolutions.jts.geom._
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
+import org.locationtech.jts.geom._
+import org.locationtech.jts.geom.impl.CoordinateArraySequence
 import org.scalacheck.{Gen, Arbitrary}
 import org.scalatest.{Matchers, FunSpec}
 

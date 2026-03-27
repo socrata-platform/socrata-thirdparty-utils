@@ -4,7 +4,7 @@ import com.rojoma.json.v3.ast._
 import com.rojoma.json.v3.codec.DecodeError.{InvalidValue, InvalidType}
 import com.rojoma.json.v3.codec._
 import com.rojoma.json.v3.util._
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom._
 import scala.language.postfixOps
 
 import com.socrata.thirdparty.EitherCompat._

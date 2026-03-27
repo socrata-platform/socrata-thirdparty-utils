@@ -26,7 +26,7 @@ def commonDeps(scalaVersion: String) = Seq(
   "com.rojoma"        %% "rojoma-json-v3-grisu"  % "1.0.0" % "provided",
   "org.scalatra"      %% "scalatra"            % scalatraVersion(scalaVersion) % "provided",
   "org.scala-lang.modules" %% "scala-collection-compat"  % "2.5.0",
-  "com.vividsolutions" % "jts"                 % "1.13" % "provided",
+  "org.locationtech.jts" % "jts-core" % "1.18.2" % "provided",
   "nl.grons" %% "metrics4-scala" % "4.1.1" % "provided",
   "io.dropwizard.metrics" % "metrics-jetty9"   % "4.1.1" % "provided",
   "io.dropwizard.metrics" % "metrics-graphite" % "4.1.1" % "provided",
