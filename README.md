@@ -47,7 +47,9 @@ Support for Coda Hale / Dropwizard Metrics
 Releasing
 =========
 
-Run `sbt-release` and set an appropriate version.
+1. Get your fancy new code on `main`
+1. Create and push a new git tag (`git tag vX.Y.Z`, `git push origin vX.Y.Z`)
+1. Manually run the Jenkins `socrata-thirdparty-utils` job
 
 Perf Benchmarking
 =================
