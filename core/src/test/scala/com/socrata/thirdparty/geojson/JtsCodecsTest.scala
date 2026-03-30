@@ -5,7 +5,7 @@ import com.rojoma.json.v3.codec.{DecodeError, JsonDecode}
 import com.rojoma.json.v3.io.JsonReader
 import com.socrata.thirdparty.geojson.JtsCodecs._
 import com.socrata.thirdparty.EitherCompat._
-import com.vividsolutions.jts.geom._
+import org.locationtech.jts.geom._
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import org.scalatest.{FunSpec, Matchers}
 
