@@ -45,7 +45,7 @@ publish / skip := true
 
 val commonSettings = Seq(
   scalaVersion := "2.13.6",
-  crossScalaVersions := Seq("2.11.7", "2.12.10", scalaVersion.value),
+  crossScalaVersions := Seq("2.12.10", scalaVersion.value),
   organization := "com.socrata",
   scalacOptions ++= Seq("-deprecation")
 )
